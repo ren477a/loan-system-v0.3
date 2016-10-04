@@ -14,9 +14,9 @@ public class Loan extends JFrame{
 	
 	
 	public Loan(String title) {
-		taAcc = new JTextArea();
+		taAcc = new JTextArea(2, 15);
 		taLog = new JTextArea();
-		taAcc.append("asaaaaaaaaaaaaaaad\nsdf\nasd\nasd\nsdf\nasd\nasd\nsdf\nasd\nasd\nsdf\nasd\nasd\nsdf\nasd\n");
+		taAcc.append("asaaaaaaaaaaaaaaaaaaaaaaaaaaaad\nsdf\nasd\nasd\nsdf\nasd\nasd\nsdf\nasd\nasd\nsdf\nasd\nasd\nsdf\nasd\n");
 		JScrollPane spAcc = new JScrollPane(taAcc);
 		JScrollPane spLog = new JScrollPane(taLog);
 		
@@ -52,7 +52,7 @@ public class Loan extends JFrame{
 		add(pCenter);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle(title);
-		setSize(400, 400);
+		setSize(500, 500);
 		setVisible(true);
 	}
 	
