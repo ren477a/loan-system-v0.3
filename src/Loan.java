@@ -1,11 +1,9 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.JTextComponent;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
-import java.util.Vector;
 
 public class Loan extends JFrame{
 	private JLabel lblSelectAcc, lblSortBy, 								//panel 1
