@@ -25,6 +25,10 @@ public class Loan extends JFrame{
 	private Connection conn;
 	private Statement comm;
 	private ResultSet rs;
+	private JComboBox<String> cbMonth;
+	private JComboBox<Integer> cbDay;
+	private JComboBox<Integer> cbYear;
+	private JLabel lblBirthday;
         
 	public Loan(){
 		//DATABASE CONNECTION
@@ -76,17 +80,28 @@ public class Loan extends JFrame{
 		
 		//panel 2
 		lblAccDetails = new JLabel("Account details:");
-		lblAccID = new JLabel("ID");
-		lblFirst  = new JLabel("First Name");
-		lblMiddle = new JLabel("Middle Name");
-		lblLast = new JLabel("Last Name");
+		lblAccID = new JLabel("ID:");
+		lblFirst  = new JLabel("First Name:");
+		lblMiddle = new JLabel("Middle Name:");
+		lblLast = new JLabel("Last Name:");
+		lblBirthday = new JLabel("Birthdate:");
 		tfAccID = new JTextField();
 		tfFirst = new JTextField();
 		tfMiddle = new JTextField();
 		tfLast = new JTextField();
+		cbMonth = new JComboBox<String>(new String[] {"January","February","April","May","June","July","August","September","October","November","December"});
+		cbDay = new JComboBox<Integer>(new Integer[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31});
+		Integer[] years = new Integer[117];
+		for(int i = 0; i <= 116; i++) { years[i] = 1900 + i; }
+		cbYear = new JComboBox<Integer>(years);
+		cbYear.setSelectedIndex(116);
+		JPanel pnlBirth = new JPanel(new FlowLayout());
+		pnlBirth.add(cbMonth);
+		pnlBirth.add(cbDay);
+		pnlBirth.add(cbYear);
 		btnUpdate = new JButton("Update");
 		btnUpdate.addActionListener(btnl);
-		JPanel pnl2Center = new JPanel(new GridLayout(4, 1));
+		JPanel pnl2Center = new JPanel(new GridLayout(10, 1));
 		pnl2Center.add(lblAccID);
 		pnl2Center.add(tfAccID);
 		pnl2Center.add(lblFirst);
@@ -95,6 +110,8 @@ public class Loan extends JFrame{
 		pnl2Center.add(tfMiddle);
 		pnl2Center.add(lblLast);
 		pnl2Center.add(tfLast);
+		pnl2Center.add(lblBirthday);
+		pnl2Center.add(pnlBirth);
 		
 		//panel 3
 		rbLoanByID = new JRadioButton("ID");
@@ -129,17 +146,17 @@ public class Loan extends JFrame{
 		
 		//panel 4
 		lblLoanDetails = new JLabel("Loan details:");
-		lblLoanID = new JLabel("ID");
-		lblAmount = new JLabel("Amount");
-		lblBalance = new JLabel ("Balance");
-		lblPaid = new JLabel("Paid");
+		lblLoanID = new JLabel("ID:");
+		lblAmount = new JLabel("Amount:");
+		lblBalance = new JLabel ("Balance:");
+		lblPaid = new JLabel("Paid:");
 		tfLoanID = new JTextField();
 		tfAmount = new JTextField();
 		tfBalance = new JTextField();
 		tfPaid = new JTextField();
 		btnPay = new JButton("Pay");
 		btnPay.addActionListener(btnl);
-		JPanel pnl4Center = new JPanel(new GridLayout(4, 2));
+		JPanel pnl4Center = new JPanel(new GridLayout(8, 1));
 		pnl4Center.add(lblLoanID);
 		pnl4Center.add(tfLoanID);
 		pnl4Center.add(lblAmount);
@@ -149,15 +166,6 @@ public class Loan extends JFrame{
 		pnl4Center.add(lblPaid);
 		pnl4Center.add(tfPaid);
 		
-//		btnNext = new JButton("Next");
-//		btnPrev = new JButton("Previous");
-		
-		
-		
-		
-		
-		
-		//loadAccData(-1);
 		
 		//panel 1
 		JPanel pnlAccList = new JPanel(new BorderLayout());
@@ -201,8 +209,11 @@ public class Loan extends JFrame{
 				System.out.println("Select account");
 				String selected = (String) listAcc.getSelectedValue();
 				int selectedAccID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
+				//load account data to loan details text fields
 				loadAccData(selectedAccID);
+				//update loan id JList
 				getLoanIDs();
+				//clear loan details text fields
 				clearLoanData();
 			} else if(ae.getSource().equals(btnDelAcc)) {
 				System.out.println("Delect account");
@@ -214,6 +225,7 @@ public class Loan extends JFrame{
 				System.out.println("Select loan");
 				String selected = (String) listLoan.getSelectedValue();
 				int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
+				//load loan data to loan details text fields
 				loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
 			} else if(ae.getSource().equals(btnDelLoan)) {
 				System.out.println("Delete loan");
