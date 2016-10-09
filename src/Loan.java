@@ -274,13 +274,17 @@ public class Loan extends JFrame{
 	private boolean onOP = false;
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
+			
 			if(ae.getSource().equals(btnApply)) {
 				System.out.println("Apply");
 				JOptionPane.showMessageDialog(null,  "Please fill out the application form.", "Add new account", JOptionPane.INFORMATION_MESSAGE);
 				clearAccData();
 				clearLoanData();
 				enableAccInput();
-			} else if(ae.getSource().equals(btnSelAcc)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnSelAcc)) {
 				System.out.println("Select account");
 				String selected = (String) listAcc.getSelectedValue();
 				int selectedAccID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
@@ -291,9 +295,15 @@ public class Loan extends JFrame{
 				listLoan.setSelectedIndex(0);
 				//clear loan details text fields
 				clearLoanData();
-			} else if(ae.getSource().equals(btnDelAcc)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnDelAcc)) {
 				System.out.println("Delect account");
-			} else if(ae.getSource().equals(btnUpdate)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnUpdate)) {
 				System.out.println("Update record");
 				if(!onOP) {
 					if(tfAccID.getText().equals(""))
@@ -302,7 +312,7 @@ public class Loan extends JFrame{
 						enableAccInput();
 				} else {
 					if(tfAccID.getText().equals("")) {
-						//submit for applicatiion
+						//submit for application
 						//validate
 						if(tfFirst.getText().equals("") || tfLast.getText().equals("") || tfAddress.getText().equals("") || tfEmail.getText().equals("") || tfMonthlyIncome.getText().equals("")) {
 							JOptionPane.showMessageDialog(null,  "Please fill out every field.", "Warning", JOptionPane.INFORMATION_MESSAGE);
@@ -339,25 +349,56 @@ public class Loan extends JFrame{
 					//validate inputs
 				}
 				
-			} else if(ae.getSource().equals(btnNewLoan)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnNewLoan)) {
 				System.out.println("New loan");
-			} else if(ae.getSource().equals(btnSelLoan)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnSelLoan)) {
 				System.out.println("Select loan");
 				String selected = (String) listLoan.getSelectedValue();
 				int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
 				//load loan data to loan details text fields
 				loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
-			} else if(ae.getSource().equals(btnDelLoan)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnDelLoan)) {
 				System.out.println("Delete loan");
-			} else if(ae.getSource().equals(btnPay)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnPay)) {
 				if(tfLoanID.getText().equals("")) {
-					endLoanOperation();
+					//validate
+					try {
+						double amount = Double.parseDouble(tfAmount.getText());
+						if(amount >= 10000 && amount <= 5000000) {
+							endLoanOperation();
+							//insert to accounts
+							//create loan_<id> table
+							//calculate payable, paymentevery, balance, paid
+						} else {
+							JOptionPane.showMessageDialog(null, "Minimum loan amount is PHP 10,000 and maximum amount is PHP 5,000,000", "Warning", JOptionPane.INFORMATION_MESSAGE);
+						}
+					} catch (NumberFormatException e) {
+						JOptionPane.showMessageDialog(null, "Please enter valid amount.", "Warning", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 				System.out.println("Pay");
-			} else if(ae.getSource().equals(btnAccCancel)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnAccCancel)) {
 				System.out.println("acc cancel");
 				endAccOperation();
-			} else if(ae.getSource().equals(btnLoanCancel)) {
+			} 
+			
+			
+			else if(ae.getSource().equals(btnLoanCancel)) {
 				System.out.println("loan cancel");
 				endLoanOperation();
 			}
@@ -383,10 +424,7 @@ public class Loan extends JFrame{
 		tfAmount.setEditable(true);
 		cbLoanTerm.setEnabled(true);
 		cbPayBack.setEnabled(true);
-		tfTotalPayable.setEditable(true);
-		tfPaymentEvery.setEditable(true);
-		tfBalance.setEditable(true);
-		tfPaid.setEditable(true);
+		
 		btnLoanCancel.setEnabled(true);
 		btnPay.setText("Submit");
 		listAcc.setEnabled(false);
@@ -404,10 +442,7 @@ public class Loan extends JFrame{
 		tfAmount.setEditable(false);
 		cbLoanTerm.setEnabled(false);
 		cbPayBack.setEnabled(false);
-		tfTotalPayable.setEditable(false);
-		tfPaymentEvery.setEditable(false);
-		tfBalance.setEditable(false);
-		tfPaid.setEditable(false);
+		
 		btnLoanCancel.setEnabled(false);
 		btnPay.setText("Pay");
 		listAcc.setEnabled(true);
