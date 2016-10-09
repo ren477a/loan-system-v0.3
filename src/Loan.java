@@ -5,12 +5,18 @@ import java.sql.*;
 import java.util.Vector;
 
 public class Loan extends JFrame{
-	private JLabel lblAccID, lblFirst, lblMiddle, lblLast, lblAmount, lblBalance, lblPaid, lblSelectAcc, lblSelectLoanIDs,
-						lblSortBy;
-	private JTextField tfID, tfFirst, tfMiddle, tfLast, tfAmount, tfBalance, tfPaid;
+	private JLabel lblSelectAcc, lblSortBy, 								//panel 1
+					lblAccDetails, lblAccID, lblFirst, lblMiddle, lblLast, 	//panel 2
+					lblSelectLoan,											//panel 3
+					lblAmount, lblBalance, lblPaid; 						//panel 4
+	private JTextField tfAccID, tfFirst, tfMiddle, tfLast, 	//panel 2
+						tfAmount, tfBalance, tfPaid;  		//panel 4
 	private JRadioButton rbByID, rbByName;
 	private ButtonGroup bgSortBy;
-	private JButton btnNext, btnPrev;
+	private JButton btnApply, btnSelAcc, btnDelAcc,			//panel1
+					btnUpdate,								//panel2
+					btnNewLoan, btnSelLoan, btnDelLoan,		//panel3
+					btnPay;									//panel4
 	private JList listAcc;
 	private DefaultListModel<String> modelAcc;
 	private JComboBox<String> cmbAcc, cmbLoanIDs;
@@ -30,6 +36,9 @@ public class Loan extends JFrame{
 		bgSortBy = new ButtonGroup();
 		bgSortBy.add(rbByID);
 		bgSortBy.add(rbByName);
+		btnApply = new JButton("Apply");
+		btnSelAcc = new JButton("Select");
+		btnDelAcc = new JButton("Delete");
 		JPanel pnl1Radio = new JPanel(new FlowLayout());
 		pnl1Radio.add(lblSortBy);
 		pnl1Radio.add(rbByID);
@@ -37,17 +46,31 @@ public class Loan extends JFrame{
 		JPanel pnl1North = new JPanel(new GridLayout(2, 1));
 		pnl1North.add(lblSelectAcc);
 		pnl1North.add(pnl1Radio);
-		
+		JPanel pnl1South = new JPanel(new GridLayout(1, 3));
+		pnl1South.add(btnApply);
+		pnl1South.add(btnSelAcc);
+		pnl1South.add(btnDelAcc);
 		
 		//panel 2
+		lblAccDetails = new JLabel("Account details:");
 		lblAccID = new JLabel("ID");
 		lblFirst  = new JLabel("First Name");
 		lblMiddle = new JLabel("Middle Name");
 		lblLast = new JLabel("Last Name");
-		tfID = new JTextField();
+		tfAccID = new JTextField();
 		tfFirst = new JTextField();
 		tfMiddle = new JTextField();
 		tfLast = new JTextField();
+		btnUpdate = new JButton("Update");
+		JPanel pnl2Center = new JPanel(new GridLayout(4, 1));
+		pnl2Center.add(lblAccID);
+		pnl2Center.add(tfAccID);
+		pnl2Center.add(lblFirst);
+		pnl2Center.add(tfFirst);
+		pnl2Center.add(lblMiddle);
+		pnl2Center.add(tfMiddle);
+		pnl2Center.add(lblLast);
+		pnl2Center.add(tfLast);
 		
 		//panel 3
 		lblSelectLoanIDs = new JLabel("Select Loan:");
@@ -88,17 +111,14 @@ public class Loan extends JFrame{
 		//panel 1
 		JPanel pnlAccList = new JPanel(new BorderLayout());
 		pnlAccList.add(pnl1North, BorderLayout.NORTH);
+		pnlAccList.add(pnl1South, BorderLayout.SOUTH);
 		pnlAccList.add(scrollAcc);
 		//panel 2
-		JPanel pnlInfo = new JPanel(new GridLayout(10,2,5,5));
-		pnlInfo.add(lblAccID);
-		pnlInfo.add(tfID);
-		pnlInfo.add(lblFirst);
-		pnlInfo.add(tfFirst);
-		pnlInfo.add(lblMiddle);
-		pnlInfo.add(tfMiddle);
-		pnlInfo.add(lblLast);
-		pnlInfo.add(tfLast);
+		JPanel pnlInfo = new JPanel(new BorderLayout());
+		pnlInfo.add(lblAccDetails, BorderLayout.NORTH);
+		pnlInfo.add(btnUpdate, BorderLayout.SOUTH);
+		pnlInfo.add(pnl2Center);
+		
 //		pnlInfo.add(lblSelectLoanIDs);
 //		pnlInfo.add(cmbLoanIDs);
 //		pnlInfo.add(lblAmount);
@@ -141,7 +161,7 @@ public class Loan extends JFrame{
 
 	public void viewAccData(){
 		try {
-			tfID.setText(Integer.toString(rs.getInt("id")));
+			tfAccID.setText(Integer.toString(rs.getInt("id")));
 			System.out.println("ASDASD");
 			tfFirst.setText(rs.getString("firstname"));
 			tfMiddle.setText(rs.getString("middlename"));
@@ -176,7 +196,7 @@ public class Loan extends JFrame{
 //	public Vector<Integer> getLoanIDs(){
 //		try {
 //			loanIDs.removeAllElements();
-//			rs = comm.executeQuery("SELECT * FROM loan_"+tfID.getText());
+//			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText());
 //			while(rs.next()){
 //				loanIDs.add(rs.getInt("id"));
 //			}
