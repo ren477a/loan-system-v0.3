@@ -7,21 +7,20 @@ import java.util.Vector;
 public class Loan extends JFrame{
 	private JLabel lblSelectAcc, lblSortBy, 								//panel 1
 					lblAccDetails, lblAccID, lblFirst, lblMiddle, lblLast, 	//panel 2
-					lblSelectLoan,											//panel 3
+					lblSelectLoan, lblLoanSortBy,											//panel 3
 					lblLoanDetails, lblLoanID, lblAmount, lblBalance, lblPaid; 						//panel 4
 	private JTextField tfAccID, tfFirst, tfMiddle, tfLast, 	//panel 2
 						tfLoanID, tfAmount, tfBalance, tfPaid;  		//panel 4
-	private JRadioButton rbByID, rbByName;
-	private ButtonGroup bgSortBy;
+	private JRadioButton rbByID, rbByName,
+							rbLoanByID, rbLoanByAmount;
+	private ButtonGroup bgSortBy, bg2SortBy;
 	private JButton btnApply, btnSelAcc, btnDelAcc,			//panel1
 					btnUpdate,								//panel2
 					btnNewLoan, btnSelLoan, btnDelLoan,		//panel3
 					btnPay;									//panel4
 	private JList listAcc, listLoan;
 	private DefaultListModel<String> modelAcc, modelLoan;
-	private JComboBox<String> cmbAcc, cmbLoanIDs;
-	private Vector<Integer> accIDs, loanIDs;
-	private DefaultComboBoxModel modelAccIDs, modelloanIDs;
+	private ButtonListener btnl;
 
 	private Connection conn;
 	private Statement comm;
@@ -39,6 +38,8 @@ public class Loan extends JFrame{
 			e.printStackTrace();
 		}
 		
+		btnl = new ButtonListener();
+		
 		//panel1
 		lblSelectAcc = new JLabel("Select account:");
 		lblSortBy = new JLabel("Sort by:");
@@ -50,11 +51,15 @@ public class Loan extends JFrame{
 		btnApply = new JButton("Apply");
 		btnSelAcc = new JButton("Select");
 		btnDelAcc = new JButton("Delete");
+		btnApply.addActionListener(btnl);
+		btnSelAcc.addActionListener(btnl);
+		btnDelAcc.addActionListener(btnl);
 		modelAcc = new DefaultListModel<String>();
 		getAccountIDs();
 		listAcc = new JList(modelAcc);
 		listAcc.setLayoutOrientation(JList.VERTICAL);
 		listAcc.setVisibleRowCount(3);
+		listAcc.setSelectedIndex(0);
 		JScrollPane scrollAcc = new JScrollPane(listAcc);
 		scrollAcc.setPreferredSize(new Dimension(300, 400));
 		JPanel pnl1Radio = new JPanel(new FlowLayout());
@@ -80,6 +85,7 @@ public class Loan extends JFrame{
 		tfMiddle = new JTextField();
 		tfLast = new JTextField();
 		btnUpdate = new JButton("Update");
+		btnUpdate.addActionListener(btnl);
 		JPanel pnl2Center = new JPanel(new GridLayout(4, 1));
 		pnl2Center.add(lblAccID);
 		pnl2Center.add(tfAccID);
@@ -91,15 +97,31 @@ public class Loan extends JFrame{
 		pnl2Center.add(tfLast);
 		
 		//panel 3
+		rbLoanByID = new JRadioButton("ID");
+		rbLoanByAmount = new JRadioButton("Amount");
+		bg2SortBy = new ButtonGroup();
+		bg2SortBy.add(rbLoanByID);
+		bg2SortBy.add(rbLoanByAmount);
 		lblSelectLoan = new JLabel("Select Loan:");
+		lblLoanSortBy = new JLabel("Sort by:");
 		btnNewLoan = new JButton("New");
 		btnSelLoan = new JButton("Select");
 		btnDelLoan = new JButton("Delete");
+		btnNewLoan.addActionListener(btnl);
+		btnSelLoan.addActionListener(btnl);
+		btnDelLoan.addActionListener(btnl);
 		modelLoan = new DefaultListModel<String>();
 		listLoan = new JList(modelLoan);
 		listLoan.setLayoutOrientation(JList.VERTICAL);
 		listLoan.setVisibleRowCount(3);
 		JScrollPane scrollLoan = new JScrollPane(listLoan);
+		JPanel pnl3Radio = new JPanel(new FlowLayout());
+		pnl3Radio.add(lblLoanSortBy);
+		pnl3Radio.add(rbLoanByID);
+		pnl3Radio.add(rbLoanByAmount);
+		JPanel pnl3North = new JPanel(new GridLayout(2, 1));
+		pnl3North.add(lblSelectLoan);
+		pnl3North.add(pnl3Radio);
 		JPanel pnl3South = new JPanel(new FlowLayout());
 		pnl3South.add(btnNewLoan);
 		pnl3South.add(btnSelLoan);
@@ -116,6 +138,7 @@ public class Loan extends JFrame{
 		tfBalance = new JTextField();
 		tfPaid = new JTextField();
 		btnPay = new JButton("Pay");
+		btnPay.addActionListener(btnl);
 		JPanel pnl4Center = new JPanel(new GridLayout(4, 2));
 		pnl4Center.add(lblLoanID);
 		pnl4Center.add(tfLoanID);
@@ -134,7 +157,7 @@ public class Loan extends JFrame{
 		
 		
 		
-		loadAccData(-1);
+		//loadAccData(-1);
 		
 		//panel 1
 		JPanel pnlAccList = new JPanel(new BorderLayout());
@@ -148,7 +171,7 @@ public class Loan extends JFrame{
 		pnlInfo.add(pnl2Center);
 		//panel 3
 		JPanel pnlLoanList = new JPanel(new BorderLayout());
-		pnlLoanList.add(lblSelectLoan, BorderLayout.NORTH);
+		pnlLoanList.add(pnl3North, BorderLayout.NORTH);
 		pnlLoanList.add(pnl3South, BorderLayout.SOUTH);
 		pnlLoanList.add(scrollLoan);
 		//panel 4
@@ -167,15 +190,70 @@ public class Loan extends JFrame{
 		createShowGUI();
 		
 		
-		loadAccData(-1);
+		//loadAccData(-1);
+	}
+	
+	private class ButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			if(ae.getSource().equals(btnApply)) {
+				System.out.println("Apply");
+			} else if(ae.getSource().equals(btnSelAcc)) {
+				System.out.println("Select account");
+				String selected = (String) listAcc.getSelectedValue();
+				int selectedAccID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
+				loadAccData(selectedAccID);
+				getLoanIDs();
+				clearLoanData();
+			} else if(ae.getSource().equals(btnDelAcc)) {
+				System.out.println("Delect account");
+			} else if(ae.getSource().equals(btnUpdate)) {
+				System.out.println("Update record");
+			} else if(ae.getSource().equals(btnNewLoan)) {
+				System.out.println("New loan");
+			} else if(ae.getSource().equals(btnSelLoan)) {
+				System.out.println("Select loan");
+				String selected = (String) listLoan.getSelectedValue();
+				int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
+				loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
+			} else if(ae.getSource().equals(btnDelLoan)) {
+				System.out.println("Delete loan");
+			} else if(ae.getSource().equals(btnPay)) {
+				System.out.println("Pay");
+			}
+		}
+	}
+	
+	public void loadLoanData(int accID, int loanID){
+		try {
+			rs = comm.executeQuery("SELECT * FROM loan_"+ accID +" Where id="+ loanID);
+			rs.next();
+			viewLoanData();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void viewLoanData(){
+		try {
+			tfLoanID.setText(Integer.toString(rs.getInt("id")));
+			tfAmount.setText(rs.getString("amount"));
+			tfBalance.setText(rs.getString("balance"));
+			tfPaid.setText(rs.getString("paid"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void clearLoanData() {
+		tfLoanID.setText("");
+		tfAmount.setText("");
+		tfBalance.setText("");
+		tfPaid.setText("");
 	}
 	
 	public void loadAccData(int id){
 		try {
-			if(id == -1)
-				rs = comm.executeQuery("SELECT * FROM accounts");
-			else
-				rs = comm.executeQuery("SELECT * FROM accounts Where id="+id);
+			rs = comm.executeQuery("SELECT * FROM accounts Where id="+id);
 			rs.next();
 			viewAccData();
 		} catch (SQLException e) {
@@ -186,7 +264,6 @@ public class Loan extends JFrame{
 	public void viewAccData(){
 		try {
 			tfAccID.setText(Integer.toString(rs.getInt("id")));
-			System.out.println("ASDASD");
 			tfFirst.setText(rs.getString("firstname"));
 			tfMiddle.setText(rs.getString("middlename"));
 			tfLast.setText(rs.getString("lastname"));
@@ -203,9 +280,10 @@ public class Loan extends JFrame{
 		setVisible(true);
 	}
 	
-	//gets account IDs and add it to the JList for accounts
+	//gets account IDs and add it to the JList model for accounts
 	public void getAccountIDs(){
 		try {
+			modelAcc.removeAllElements();
 			rs = comm.executeQuery("SELECT * FROM accounts");
 			while(rs.next()){
 				modelAcc.addElement(rs.getInt("id") + " - " + rs.getString("lastname") + ", " 
@@ -217,19 +295,17 @@ public class Loan extends JFrame{
 		}
 		
 	}
-//	public Vector<Integer> getLoanIDs(){
-//		try {
-//			loanIDs.removeAllElements();
-//			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText());
-//			while(rs.next()){
-//				loanIDs.add(rs.getInt("id"));
-//			}
-//			
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//		return loanIDs;
-//	}
+	public void getLoanIDs(){
+		try {
+			modelLoan.removeAllElements();
+			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText());
+			while(rs.next()){
+				modelLoan.addElement(rs.getInt("id") + " - " + rs.getDouble("Amount"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 //	
 
 //
