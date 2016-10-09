@@ -8,9 +8,9 @@ public class Loan extends JFrame{
 	private JLabel lblSelectAcc, lblSortBy, 								//panel 1
 					lblAccDetails, lblAccID, lblFirst, lblMiddle, lblLast, 	//panel 2
 					lblSelectLoan,											//panel 3
-					lblAmount, lblBalance, lblPaid; 						//panel 4
+					lblLoanDetails, lblLoanID, lblAmount, lblBalance, lblPaid; 						//panel 4
 	private JTextField tfAccID, tfFirst, tfMiddle, tfLast, 	//panel 2
-						tfAmount, tfBalance, tfPaid;  		//panel 4
+						tfLoanID, tfAmount, tfBalance, tfPaid;  		//panel 4
 	private JRadioButton rbByID, rbByName;
 	private ButtonGroup bgSortBy;
 	private JButton btnApply, btnSelAcc, btnDelAcc,			//panel1
@@ -106,12 +106,26 @@ public class Loan extends JFrame{
 		pnl3South.add(btnDelLoan);
 		
 		//panel 4
+		lblLoanDetails = new JLabel("Loan details:");
+		lblLoanID = new JLabel("ID");
 		lblAmount = new JLabel("Amount");
 		lblBalance = new JLabel ("Balance");
 		lblPaid = new JLabel("Paid");
+		tfLoanID = new JTextField();
 		tfAmount = new JTextField();
 		tfBalance = new JTextField();
 		tfPaid = new JTextField();
+		btnPay = new JButton("Pay");
+		JPanel pnl4Center = new JPanel(new GridLayout(4, 2));
+		pnl4Center.add(lblLoanID);
+		pnl4Center.add(tfLoanID);
+		pnl4Center.add(lblAmount);
+		pnl4Center.add(tfAmount);
+		pnl4Center.add(lblBalance);
+		pnl4Center.add(tfBalance);
+		pnl4Center.add(lblPaid);
+		pnl4Center.add(tfPaid);
+		
 //		btnNext = new JButton("Next");
 //		btnPrev = new JButton("Previous");
 		
@@ -138,14 +152,17 @@ public class Loan extends JFrame{
 		pnlLoanList.add(pnl3South, BorderLayout.SOUTH);
 		pnlLoanList.add(scrollLoan);
 		//panel 4
-		JPanel pnlLoanInfo = new JPanel();
+		JPanel pnlLoanInfo = new JPanel(new BorderLayout());
+		pnlLoanInfo.add(lblLoanDetails, BorderLayout.NORTH);
+		pnlLoanInfo.add(btnPay, BorderLayout.SOUTH);
+		pnlLoanInfo.add(pnl4Center);
+		
 		
 		JPanel pnlCenter = new JPanel(new GridLayout(1, 4));
 		pnlCenter.add(pnlAccList);
 		pnlCenter.add(pnlInfo);
 		pnlCenter.add(pnlLoanList);
-//		pnlCenter.add(pnlLoanList);
-//		pnlCenter.add(pnlLoanInfo);
+		pnlCenter.add(pnlLoanInfo);
 		add(pnlCenter);
 		createShowGUI();
 		
