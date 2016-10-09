@@ -285,6 +285,7 @@ public class Loan extends JFrame{
 		
 	}
 	
+	private boolean onOP = false;
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			if(ae.getSource().equals(btnApply)) {
@@ -306,6 +307,15 @@ public class Loan extends JFrame{
 				System.out.println("Delect account");
 			} else if(ae.getSource().equals(btnUpdate)) {
 				System.out.println("Update record");
+				if(!onOP) {
+					if(tfAccID.getText().equals(""))
+						JOptionPane.showMessageDialog(null, "Please select an account to update.","Warning", JOptionPane.INFORMATION_MESSAGE);
+					else 
+						enableAccInput();
+				} else {
+					//validate inputs
+				}
+				
 			} else if(ae.getSource().equals(btnNewLoan)) {
 				System.out.println("New loan");
 			} else if(ae.getSource().equals(btnSelLoan)) {
@@ -328,6 +338,7 @@ public class Loan extends JFrame{
 	}
 	
 	public void enableAccInput() {
+		onOP = true;
 		listAcc.setEnabled(false);
 		btnApply.setEnabled(false);
 		btnSelAcc.setEnabled(false);
@@ -353,6 +364,7 @@ public class Loan extends JFrame{
 	}
 	
 	public void endAccOperation() {
+		onOP = false;
 		listAcc.setEnabled(true);
 		btnApply.setEnabled(true);
 		btnSelAcc.setEnabled(true);
