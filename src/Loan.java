@@ -290,6 +290,7 @@ public class Loan extends JFrame{
 		public void actionPerformed(ActionEvent ae) {
 			if(ae.getSource().equals(btnApply)) {
 				System.out.println("Apply");
+				JOptionPane.showMessageDialog(null,  "Please fill out the application form.", "Add new account", JOptionPane.INFORMATION_MESSAGE);
 				clearAccData();
 				clearLoanData();
 				enableAccInput();
@@ -313,6 +314,8 @@ public class Loan extends JFrame{
 					else 
 						enableAccInput();
 				} else {
+					updateAccount();
+					endAccOperation();
 					//validate inputs
 				}
 				
@@ -337,6 +340,21 @@ public class Loan extends JFrame{
 		}
 	}
 	
+	public void updateAccount() {
+		try {
+			System.out.println("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
+								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
+								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
+								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
+			comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
+								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
+								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
+								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void enableAccInput() {
 		onOP = true;
 		listAcc.setEnabled(false);
@@ -347,7 +365,6 @@ public class Loan extends JFrame{
 		btnNewLoan.setEnabled(false);
 		btnSelLoan.setEnabled(false);
 		btnDelLoan.setEnabled(false);
-		tfAccID.setEditable(true);
 		tfFirst.setEditable(true);
 		tfMiddle.setEditable(true);
 		tfLast.setEditable(true);
@@ -373,7 +390,6 @@ public class Loan extends JFrame{
 		btnNewLoan.setEnabled(true);
 		btnSelLoan.setEnabled(true);
 		btnDelLoan.setEnabled(true);
-		tfAccID.setEditable(false);
 		tfFirst.setEditable(false);
 		tfMiddle.setEditable(false);
 		tfLast.setEditable(false);
