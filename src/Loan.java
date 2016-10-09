@@ -1,4 +1,7 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
@@ -29,6 +32,22 @@ public class Loan extends JFrame{
 	private JComboBox<Integer> cbDay;
 	private JComboBox<Integer> cbYear;
 	private JLabel lblBirthday;
+	private JLabel lblAddress;
+	private JTextField tfAddress;
+	private JLabel lblEmail;
+	private JTextField tfEmail;
+	private JLabel lblEmploymentTenure;
+	private JComboBox<String> cbTenure;
+	private JLabel lblMonthlyIncome;
+	private JTextField tfMonthlyIncome;
+	private JLabel lblLoanTerm;
+	private JLabel lblTotalPayable;
+	private JComboBox<String> cbLoanTerm;
+	private JTextField tfTotalPayable;
+	private JLabel lblPayBack;
+	private JComboBox<String> cbPayBack;
+	private JTextComponent tfPaymentEvery;
+	private JLabel lblPaymentEvery;
         
 	public Loan(){
 		//DATABASE CONNECTION
@@ -80,28 +99,47 @@ public class Loan extends JFrame{
 		
 		//panel 2
 		lblAccDetails = new JLabel("Account details:");
-		lblAccID = new JLabel("ID:");
+		lblAccID = new JLabel("Account ID:");
 		lblFirst  = new JLabel("First Name:");
 		lblMiddle = new JLabel("Middle Name:");
 		lblLast = new JLabel("Last Name:");
 		lblBirthday = new JLabel("Birthdate:");
+		lblAddress = new JLabel("Address:");
+		lblEmail = new JLabel("Email:");
+		lblEmploymentTenure = new JLabel("Employment tenure:");
+		lblMonthlyIncome = new JLabel("Monthly income (PHP):");
 		tfAccID = new JTextField();
 		tfFirst = new JTextField();
 		tfMiddle = new JTextField();
 		tfLast = new JTextField();
+		tfAddress = new JTextField();
+		tfEmail = new JTextField();
+		tfMonthlyIncome = new JTextField();
+		tfAccID.setEditable(false);
+		tfFirst.setEditable(false);
+		tfMiddle.setEditable(false);
+		tfLast.setEditable(false);
+		tfAddress.setEditable(false);
+		tfEmail.setEditable(false);
+		tfMonthlyIncome.setEditable(false);
+		cbTenure = new JComboBox<String>(new String[] {"less than 1 year", "1 - 2 years", "2 - 3 years", "more than 3 years"});
 		cbMonth = new JComboBox<String>(new String[] {"January","February","April","May","June","July","August","September","October","November","December"});
 		cbDay = new JComboBox<Integer>(new Integer[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31});
 		Integer[] years = new Integer[117];
 		for(int i = 0; i <= 116; i++) { years[i] = 1900 + i; }
 		cbYear = new JComboBox<Integer>(years);
 		cbYear.setSelectedIndex(116);
+		cbTenure.setEnabled(false);
+		cbMonth.setEnabled(false);
+		cbDay.setEnabled(false);
+		cbYear.setEnabled(false);
 		JPanel pnlBirth = new JPanel(new FlowLayout());
 		pnlBirth.add(cbMonth);
 		pnlBirth.add(cbDay);
 		pnlBirth.add(cbYear);
 		btnUpdate = new JButton("Update");
 		btnUpdate.addActionListener(btnl);
-		JPanel pnl2Center = new JPanel(new GridLayout(10, 1));
+		JPanel pnl2Center = new JPanel(new GridLayout(18, 1));
 		pnl2Center.add(lblAccID);
 		pnl2Center.add(tfAccID);
 		pnl2Center.add(lblFirst);
@@ -112,6 +150,15 @@ public class Loan extends JFrame{
 		pnl2Center.add(tfLast);
 		pnl2Center.add(lblBirthday);
 		pnl2Center.add(pnlBirth);
+		pnl2Center.add(lblAddress);
+		pnl2Center.add(tfAddress);
+		pnl2Center.add(lblEmail);
+		pnl2Center.add(tfEmail);
+		pnl2Center.add(lblEmploymentTenure);
+		pnl2Center.add(cbTenure);
+		pnl2Center.add(lblMonthlyIncome);
+		pnl2Center.add(tfMonthlyIncome);
+		pnl2Center.setBorder(new EmptyBorder(20, 20, 20, 20));
 		
 		//panel 3
 		rbLoanByID = new JRadioButton("ID");
@@ -146,25 +193,50 @@ public class Loan extends JFrame{
 		
 		//panel 4
 		lblLoanDetails = new JLabel("Loan details:");
-		lblLoanID = new JLabel("ID:");
+		lblLoanID = new JLabel("Loan ID:");
+		lblLoanTerm = new JLabel("Loan term:");
+		lblPayBack = new JLabel("Pay back:");
 		lblAmount = new JLabel("Amount:");
+		lblTotalPayable = new JLabel("Total payable:");
+		lblPaymentEvery = new JLabel("Payment :");
 		lblBalance = new JLabel ("Balance:");
 		lblPaid = new JLabel("Paid:");
 		tfLoanID = new JTextField();
+		cbLoanTerm = new JComboBox<String>(new String[] {"6 months", "9 months", "12 months", "2 years", "3 years", "5 years", "10 years"});
+		cbPayBack = new JComboBox<String>(new String[] {"Every month", "Every quarter", "Every 6 months", "Every year"});
 		tfAmount = new JTextField();
+		tfTotalPayable = new JTextField();
+		tfPaymentEvery = new JTextField();
 		tfBalance = new JTextField();
 		tfPaid = new JTextField();
+		tfLoanID.setEditable(false);
+		tfAmount.setEditable(false);
+		cbLoanTerm.setEnabled(false);
+		cbPayBack.setEnabled(false);
+		tfTotalPayable.setEditable(false);
+		tfPaymentEvery.setEditable(false);
+		tfBalance.setEditable(false);
+		tfPaid.setEditable(false);
 		btnPay = new JButton("Pay");
 		btnPay.addActionListener(btnl);
-		JPanel pnl4Center = new JPanel(new GridLayout(8, 1));
+		JPanel pnl4Center = new JPanel(new GridLayout(16, 1));
 		pnl4Center.add(lblLoanID);
 		pnl4Center.add(tfLoanID);
+		pnl4Center.add(lblLoanTerm);
+		pnl4Center.add(cbLoanTerm);
+		pnl4Center.add(lblPayBack);
+		pnl4Center.add(cbPayBack);
 		pnl4Center.add(lblAmount);
 		pnl4Center.add(tfAmount);
+		pnl4Center.add(lblTotalPayable);
+		pnl4Center.add(tfTotalPayable);
+		pnl4Center.add(lblPaymentEvery);
+		pnl4Center.add(tfPaymentEvery);
 		pnl4Center.add(lblBalance);
 		pnl4Center.add(tfBalance);
 		pnl4Center.add(lblPaid);
 		pnl4Center.add(tfPaid);
+		pnl4Center.setBorder(new EmptyBorder(20, 20, 20, 20));
 		
 		
 		//panel 1
@@ -194,6 +266,7 @@ public class Loan extends JFrame{
 		pnlCenter.add(pnlInfo);
 		pnlCenter.add(pnlLoanList);
 		pnlCenter.add(pnlLoanInfo);
+		pnlCenter.setBorder(new EmptyBorder(20, 20, 20, 20));
 		add(pnlCenter);
 		createShowGUI();
 		
@@ -279,6 +352,13 @@ public class Loan extends JFrame{
 			tfFirst.setText(rs.getString("firstname"));
 			tfMiddle.setText(rs.getString("middlename"));
 			tfLast.setText(rs.getString("lastname"));
+			cbMonth.setSelectedItem(rs.getObject("bday_month"));
+			cbDay.setSelectedItem(rs.getObject("bday_day"));
+			cbYear.setSelectedItem(rs.getObject("bday_year"));
+			tfAddress.setText(rs.getString("address"));
+			tfEmail.setText(rs.getString("email"));
+			cbTenure.setSelectedItem(rs.getObject("tenure"));
+			tfMonthlyIncome.setText(rs.getString("monthly_income"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -287,7 +367,7 @@ public class Loan extends JFrame{
 	private void createShowGUI(){
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Loan Management");
-		setSize(900, 400);
+		setSize(1200, 800);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
