@@ -9,11 +9,11 @@ import java.util.Vector;
 
 public class Loan extends JFrame{
 	private JLabel lblSelectAcc, lblSortBy, 								//panel 1
-					lblAccDetails, lblAccID, lblFirst, lblMiddle, lblLast, 	//panel 2
+					lblAccDetails, lblAccID, lblFirst, lblMiddle, lblLast, lblBirthday, lblAddress, lblEmail, lblEmploymentTenure, lblMonthlyIncome, 	//panel 2
 					lblSelectLoan, lblLoanSortBy,											//panel 3
-					lblLoanDetails, lblLoanID, lblAmount, lblBalance, lblPaid; 						//panel 4
-	private JTextField tfAccID, tfFirst, tfMiddle, tfLast, 	//panel 2
-						tfLoanID, tfAmount, tfBalance, tfPaid;  		//panel 4
+					lblLoanDetails, lblLoanID, lblAmount, lblBalance, lblPaid, lblLoanTerm, lblTotalPayable, lblPayBack, lblPaymentEvery; 						//panel 4
+	private JTextField tfAccID, tfFirst, tfMiddle, tfLast, tfAddress, tfEmail, tfMonthlyIncome, 	//panel 2
+						tfLoanID, tfAmount, tfBalance, tfPaid, tfTotalPayable, tfPaymentEvery;  		//panel 4
 	private JRadioButton rbByID, rbByName,
 							rbLoanByID, rbLoanByAmount;
 	private ButtonGroup bgSortBy, bg2SortBy;
@@ -31,23 +31,9 @@ public class Loan extends JFrame{
 	private JComboBox<String> cbMonth;
 	private JComboBox<Integer> cbDay;
 	private JComboBox<Integer> cbYear;
-	private JLabel lblBirthday;
-	private JLabel lblAddress;
-	private JTextField tfAddress;
-	private JLabel lblEmail;
-	private JTextField tfEmail;
-	private JLabel lblEmploymentTenure;
 	private JComboBox<String> cbTenure;
-	private JLabel lblMonthlyIncome;
-	private JTextField tfMonthlyIncome;
-	private JLabel lblLoanTerm;
-	private JLabel lblTotalPayable;
 	private JComboBox<String> cbLoanTerm;
-	private JTextField tfTotalPayable;
-	private JLabel lblPayBack;
 	private JComboBox<String> cbPayBack;
-	private JTextComponent tfPaymentEvery;
-	private JLabel lblPaymentEvery;
         
 	public Loan(){
 		//DATABASE CONNECTION
@@ -302,6 +288,7 @@ public class Loan extends JFrame{
 				loadAccData(selectedAccID);
 				//update loan id JList
 				getLoanIDs();
+				listLoan.setSelectedIndex(0);
 				//clear loan details text fields
 				clearLoanData();
 			} else if(ae.getSource().equals(btnDelAcc)) {
@@ -314,8 +301,41 @@ public class Loan extends JFrame{
 					else 
 						enableAccInput();
 				} else {
-					updateAccount();
-					endAccOperation();
+					if(tfAccID.getText().equals("")) {
+						//submit for applicatiion
+						//validate
+						if(tfFirst.getText().equals("") || tfLast.getText().equals("") || tfAddress.getText().equals("") || tfEmail.getText().equals("") || tfMonthlyIncome.getText().equals("")) {
+							JOptionPane.showMessageDialog(null,  "Please fill out every field.", "Warning", JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							try {
+								double income = Double.parseDouble(tfMonthlyIncome.getText());
+								if(income < 20000 || cbTenure.getSelectedItem().toString().equals("less than 1 year")) {
+									JOptionPane.showMessageDialog(null,  "Only applicants with monthly income more than 20000 PHP and is working for a year or more is eligible to apply for a loan.", "Denied!", JOptionPane.INFORMATION_MESSAGE);
+								} else {
+									endAccOperation();
+									enableLoanInput();
+								}
+								
+							} catch (NumberFormatException e) {
+								JOptionPane.showMessageDialog(null,  "Enter valid monthly income!", "Error", JOptionPane.ERROR_MESSAGE);
+							}
+							
+						}
+						
+					} else {
+						//submit for update
+						try {
+							comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
+												+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
+												", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
+												"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
+							endAccOperation();
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+					
+					
 					//validate inputs
 				}
 				
@@ -330,29 +350,75 @@ public class Loan extends JFrame{
 			} else if(ae.getSource().equals(btnDelLoan)) {
 				System.out.println("Delete loan");
 			} else if(ae.getSource().equals(btnPay)) {
+				if(tfLoanID.getText().equals("")) {
+					endLoanOperation();
+				}
 				System.out.println("Pay");
 			} else if(ae.getSource().equals(btnAccCancel)) {
 				System.out.println("acc cancel");
 				endAccOperation();
 			} else if(ae.getSource().equals(btnLoanCancel)) {
 				System.out.println("loan cancel");
+				endLoanOperation();
 			}
 		}
 	}
 	
-	public void updateAccount() {
-		try {
-			System.out.println("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
-								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
-								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
-								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
-			comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
-								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
-								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
-								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+//	public void updateAccount() {
+//		try {
+//			System.out.println("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
+//								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
+//								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
+//								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
+//			comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
+//								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
+//								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
+//								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
+	
+	public void enableLoanInput() {
+		tfAmount.setEditable(true);
+		cbLoanTerm.setEnabled(true);
+		cbPayBack.setEnabled(true);
+		tfTotalPayable.setEditable(true);
+		tfPaymentEvery.setEditable(true);
+		tfBalance.setEditable(true);
+		tfPaid.setEditable(true);
+		btnLoanCancel.setEnabled(true);
+		btnPay.setText("Submit");
+		listAcc.setEnabled(false);
+		btnApply.setEnabled(false);
+		btnSelAcc.setEnabled(false);
+		btnDelAcc.setEnabled(false);
+		listLoan.setEnabled(false);
+		btnNewLoan.setEnabled(false);
+		btnSelLoan.setEnabled(false);
+		btnDelLoan.setEnabled(false);
+		btnUpdate.setEnabled(false);
+	}
+	
+	public void endLoanOperation() {
+		tfAmount.setEditable(false);
+		cbLoanTerm.setEnabled(false);
+		cbPayBack.setEnabled(false);
+		tfTotalPayable.setEditable(false);
+		tfPaymentEvery.setEditable(false);
+		tfBalance.setEditable(false);
+		tfPaid.setEditable(false);
+		btnLoanCancel.setEnabled(false);
+		btnPay.setText("Pay");
+		listAcc.setEnabled(true);
+		btnApply.setEnabled(true);
+		btnSelAcc.setEnabled(true);
+		btnDelAcc.setEnabled(true);
+		listLoan.setEnabled(true);
+		btnNewLoan.setEnabled(true);
+		btnSelLoan.setEnabled(true);
+		btnDelLoan.setEnabled(true);
+		btnUpdate.setEnabled(true);
 	}
 	
 	public void enableAccInput() {
