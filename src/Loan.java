@@ -611,66 +611,7 @@ public class Loan extends JFrame{
 			e.printStackTrace();
 		}
 	}
-//	
 
-//
-//
-//	
-//	public void viewLoanData(){
-//		try {
-//			tfAmount.setText(Double.toString(rs.getDouble("amount")));
-//			tfBalance.setText(Double.toString(rs.getDouble("Balance")));
-//			tfPaid.setText(Double.toString(rs.getDouble("Paid")));
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
-//	
-//	private class NavigationActions implements ActionListener{
-//		public void actionPerformed(ActionEvent ae){
-//			try{
-//				if(ae.getSource().equals(btnPrev)){
-//					if(!rs.isFirst())
-//						rs.previous();
-//				} else {
-//					if(!rs.isLast())
-//						rs.next();
-//				}
-//            viewAccData();
-//         } catch(SQLException e){
-//            e.printStackTrace();
-//         }
-//      }
-//   }
-//	
-//	private class ComboBox implements ActionListener{
-//		public void actionPerformed(ActionEvent ae){
-//			JComboBox cm = (JComboBox)ae.getSource();
-//			int sourceGet = (int)cm.getSelectedItem();
-//			if(cm.equals(cmbAcc)) {
-//				loadAccData(sourceGet);
-////				cmbLoanIDs.removeAllItems();
-////				Vector<Integer> temp = new Vector<Integer>();
-////				cmbLoanIDs = new JComboBox<Integer>(getLoanIDs(temp));
-//
-//				
-////				for(int i = 0; i < temp.size(); i++) {
-////					System.out.println(i + " i");
-////					cmbLoanIDs.addItem(temp.get(i));
-////					System.out.println(temp.get(i));
-////					System.out.println(temp.size() + " size");
-////				}
-//			}
-//			else if (cm.equals(cmbLoanIDs)) {
-//				
-//			}
-//			
-//			System.out.println(sourceGet);
-//			System.out.println("Here");
-//			
-//		}
-//	}
 	
 	public static void main(String[] args) {
 		JFrame app = new Loan();
