@@ -17,8 +17,8 @@ public class Loan extends JFrame{
 					btnUpdate,								//panel2
 					btnNewLoan, btnSelLoan, btnDelLoan,		//panel3
 					btnPay;									//panel4
-	private JList listAcc;
-	private DefaultListModel<String> modelAcc;
+	private JList listAcc, listLoan;
+	private DefaultListModel<String> modelAcc, modelLoan;
 	private JComboBox<String> cmbAcc, cmbLoanIDs;
 	private Vector<Integer> accIDs, loanIDs;
 	private DefaultComboBoxModel modelAccIDs, modelloanIDs;
@@ -28,6 +28,17 @@ public class Loan extends JFrame{
 	private ResultSet rs;
         
 	public Loan(){
+		//DATABASE CONNECTION
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/loan_system?autoReconnect=true&useSSL=false", "root", "");
+			comm = conn.createStatement();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		//panel1
 		lblSelectAcc = new JLabel("Select account:");
 		lblSortBy = new JLabel("Sort by:");
@@ -39,6 +50,13 @@ public class Loan extends JFrame{
 		btnApply = new JButton("Apply");
 		btnSelAcc = new JButton("Select");
 		btnDelAcc = new JButton("Delete");
+		modelAcc = new DefaultListModel<String>();
+		getAccountIDs();
+		listAcc = new JList(modelAcc);
+		listAcc.setLayoutOrientation(JList.VERTICAL);
+		listAcc.setVisibleRowCount(3);
+		JScrollPane scrollAcc = new JScrollPane(listAcc);
+		scrollAcc.setPreferredSize(new Dimension(300, 400));
 		JPanel pnl1Radio = new JPanel(new FlowLayout());
 		pnl1Radio.add(lblSortBy);
 		pnl1Radio.add(rbByID);
@@ -46,7 +64,7 @@ public class Loan extends JFrame{
 		JPanel pnl1North = new JPanel(new GridLayout(2, 1));
 		pnl1North.add(lblSelectAcc);
 		pnl1North.add(pnl1Radio);
-		JPanel pnl1South = new JPanel(new GridLayout(1, 3));
+		JPanel pnl1South = new JPanel(new FlowLayout());
 		pnl1South.add(btnApply);
 		pnl1South.add(btnSelAcc);
 		pnl1South.add(btnDelAcc);
@@ -73,7 +91,19 @@ public class Loan extends JFrame{
 		pnl2Center.add(tfLast);
 		
 		//panel 3
-		lblSelectLoanIDs = new JLabel("Select Loan:");
+		lblSelectLoan = new JLabel("Select Loan:");
+		btnNewLoan = new JButton("New");
+		btnSelLoan = new JButton("Select");
+		btnDelLoan = new JButton("Delete");
+		modelLoan = new DefaultListModel<String>();
+		listLoan = new JList(modelLoan);
+		listLoan.setLayoutOrientation(JList.VERTICAL);
+		listLoan.setVisibleRowCount(3);
+		JScrollPane scrollLoan = new JScrollPane(listLoan);
+		JPanel pnl3South = new JPanel(new FlowLayout());
+		pnl3South.add(btnNewLoan);
+		pnl3South.add(btnSelLoan);
+		pnl3South.add(btnDelLoan);
 		
 		//panel 4
 		lblAmount = new JLabel("Amount");
@@ -84,26 +114,10 @@ public class Loan extends JFrame{
 		tfPaid = new JTextField();
 //		btnNext = new JButton("Next");
 //		btnPrev = new JButton("Previous");
-		//DATABASE CONNECTION
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/loan_system?autoReconnect=true&useSSL=false", "root", "");
-			comm = conn.createStatement();
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
 		
 		
-		modelAcc = new DefaultListModel<String>();
-		getAccountIDs();
-		listAcc = new JList(modelAcc);
-		listAcc.setLayoutOrientation(JList.VERTICAL);
-		listAcc.setVisibleRowCount(3);
-		JScrollPane scrollAcc = new JScrollPane(listAcc);
-		scrollAcc.setPreferredSize(new Dimension(300, 400));
+		
+		
 		
 		
 		loadAccData(-1);
@@ -118,25 +132,18 @@ public class Loan extends JFrame{
 		pnlInfo.add(lblAccDetails, BorderLayout.NORTH);
 		pnlInfo.add(btnUpdate, BorderLayout.SOUTH);
 		pnlInfo.add(pnl2Center);
-		
-//		pnlInfo.add(lblSelectLoanIDs);
-//		pnlInfo.add(cmbLoanIDs);
-//		pnlInfo.add(lblAmount);
-//		pnlInfo.add(tfAmount);
-//		pnlInfo.add(lblBalance);
-//		pnlInfo.add(tfBalance);
-//		pnlInfo.add(lblPaid);
-//		pnlInfo.add(tfPaid);
-//		pnlInfo.add(btnPrev);
-//		pnlInfo.add(btnNext);
 		//panel 3
-		JPanel pnlLoanList = new JPanel();
+		JPanel pnlLoanList = new JPanel(new BorderLayout());
+		pnlLoanList.add(lblSelectLoan, BorderLayout.NORTH);
+		pnlLoanList.add(pnl3South, BorderLayout.SOUTH);
+		pnlLoanList.add(scrollLoan);
 		//panel 4
 		JPanel pnlLoanInfo = new JPanel();
 		
 		JPanel pnlCenter = new JPanel(new GridLayout(1, 4));
 		pnlCenter.add(pnlAccList);
 		pnlCenter.add(pnlInfo);
+		pnlCenter.add(pnlLoanList);
 //		pnlCenter.add(pnlLoanList);
 //		pnlCenter.add(pnlLoanInfo);
 		add(pnlCenter);
@@ -174,7 +181,7 @@ public class Loan extends JFrame{
 	private void createShowGUI(){
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Loan Management");
-		setSize(600, 400);
+		setSize(900, 400);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
