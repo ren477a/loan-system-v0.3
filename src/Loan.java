@@ -18,9 +18,9 @@ public class Loan extends JFrame{
 							rbLoanByID, rbLoanByAmount;
 	private ButtonGroup bgSortBy, bg2SortBy;
 	private JButton btnApply, btnSelAcc, btnDelAcc,			//panel1
-					btnUpdate,								//panel2
+					btnUpdate, btnAccCancel,								//panel2
 					btnNewLoan, btnSelLoan, btnDelLoan,		//panel3
-					btnPay;									//panel4
+					btnPay, btnLoanCancel;									//panel4
 	private JList listAcc, listLoan;
 	private DefaultListModel<String> modelAcc, modelLoan;
 	private ButtonListener btnl;
@@ -138,7 +138,13 @@ public class Loan extends JFrame{
 		pnlBirth.add(cbDay);
 		pnlBirth.add(cbYear);
 		btnUpdate = new JButton("Update");
+		btnAccCancel = new JButton("Cancel");
+		btnAccCancel.setEnabled(false);
+		btnAccCancel.addActionListener(btnl);
 		btnUpdate.addActionListener(btnl);
+		JPanel pnl2South = new JPanel(new FlowLayout());
+		pnl2South.add(btnUpdate);
+		pnl2South.add(btnAccCancel);
 		JPanel pnl2Center = new JPanel(new GridLayout(18, 1));
 		pnl2Center.add(lblAccID);
 		pnl2Center.add(tfAccID);
@@ -197,7 +203,7 @@ public class Loan extends JFrame{
 		lblLoanTerm = new JLabel("Loan term:");
 		lblPayBack = new JLabel("Pay back:");
 		lblAmount = new JLabel("Amount:");
-		lblTotalPayable = new JLabel("Total payable:");
+		lblTotalPayable = new JLabel("Total amount to pay:");
 		lblPaymentEvery = new JLabel("Payment :");
 		lblBalance = new JLabel ("Balance:");
 		lblPaid = new JLabel("Paid:");
@@ -218,7 +224,13 @@ public class Loan extends JFrame{
 		tfBalance.setEditable(false);
 		tfPaid.setEditable(false);
 		btnPay = new JButton("Pay");
+		btnLoanCancel = new JButton("Cancel");
+		btnLoanCancel.setEnabled(false);
+		btnLoanCancel.addActionListener(btnl);
 		btnPay.addActionListener(btnl);
+		JPanel pnl4South = new JPanel(new FlowLayout());
+		pnl4South.add(btnPay);
+		pnl4South.add(btnLoanCancel);
 		JPanel pnl4Center = new JPanel(new GridLayout(16, 1));
 		pnl4Center.add(lblLoanID);
 		pnl4Center.add(tfLoanID);
@@ -247,7 +259,7 @@ public class Loan extends JFrame{
 		//panel 2
 		JPanel pnlInfo = new JPanel(new BorderLayout());
 		pnlInfo.add(lblAccDetails, BorderLayout.NORTH);
-		pnlInfo.add(btnUpdate, BorderLayout.SOUTH);
+		pnlInfo.add(pnl2South, BorderLayout.SOUTH);
 		pnlInfo.add(pnl2Center);
 		//panel 3
 		JPanel pnlLoanList = new JPanel(new BorderLayout());
@@ -257,7 +269,7 @@ public class Loan extends JFrame{
 		//panel 4
 		JPanel pnlLoanInfo = new JPanel(new BorderLayout());
 		pnlLoanInfo.add(lblLoanDetails, BorderLayout.NORTH);
-		pnlLoanInfo.add(btnPay, BorderLayout.SOUTH);
+		pnlLoanInfo.add(pnl4South, BorderLayout.SOUTH);
 		pnlLoanInfo.add(pnl4Center);
 		
 		
@@ -271,13 +283,15 @@ public class Loan extends JFrame{
 		createShowGUI();
 		
 		
-		//loadAccData(-1);
 	}
 	
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			if(ae.getSource().equals(btnApply)) {
 				System.out.println("Apply");
+				clearAccData();
+				clearLoanData();
+				enableAccInput();
 			} else if(ae.getSource().equals(btnSelAcc)) {
 				System.out.println("Select account");
 				String selected = (String) listAcc.getSelectedValue();
@@ -304,8 +318,63 @@ public class Loan extends JFrame{
 				System.out.println("Delete loan");
 			} else if(ae.getSource().equals(btnPay)) {
 				System.out.println("Pay");
+			} else if(ae.getSource().equals(btnAccCancel)) {
+				System.out.println("acc cancel");
+				endAccOperation();
+			} else if(ae.getSource().equals(btnLoanCancel)) {
+				System.out.println("loan cancel");
 			}
 		}
+	}
+	
+	public void enableAccInput() {
+		listAcc.setEnabled(false);
+		btnApply.setEnabled(false);
+		btnSelAcc.setEnabled(false);
+		btnDelAcc.setEnabled(false);
+		listLoan.setEnabled(false);
+		btnNewLoan.setEnabled(false);
+		btnSelLoan.setEnabled(false);
+		btnDelLoan.setEnabled(false);
+		tfAccID.setEditable(true);
+		tfFirst.setEditable(true);
+		tfMiddle.setEditable(true);
+		tfLast.setEditable(true);
+		tfAddress.setEditable(true);
+		tfEmail.setEditable(true);
+		tfMonthlyIncome.setEditable(true);
+		cbTenure.setEnabled(true);
+		cbMonth.setEnabled(true);
+		cbDay.setEnabled(true);
+		cbYear.setEnabled(true);
+		btnPay.setEnabled(false);
+		btnUpdate.setText("Submit");
+		btnAccCancel.setEnabled(true);
+	}
+	
+	public void endAccOperation() {
+		listAcc.setEnabled(true);
+		btnApply.setEnabled(true);
+		btnSelAcc.setEnabled(true);
+		btnDelAcc.setEnabled(true);
+		listLoan.setEnabled(true);
+		btnNewLoan.setEnabled(true);
+		btnSelLoan.setEnabled(true);
+		btnDelLoan.setEnabled(true);
+		tfAccID.setEditable(false);
+		tfFirst.setEditable(false);
+		tfMiddle.setEditable(false);
+		tfLast.setEditable(false);
+		tfAddress.setEditable(false);
+		tfEmail.setEditable(false);
+		tfMonthlyIncome.setEditable(false);
+		cbTenure.setEnabled(false);
+		cbMonth.setEnabled(false);
+		cbDay.setEnabled(false);
+		cbYear.setEnabled(false);
+		btnPay.setEnabled(true);
+		btnUpdate.setText("Update");
+		btnAccCancel.setEnabled(false);
 	}
 	
 	public void loadLoanData(int accID, int loanID){
@@ -362,6 +431,21 @@ public class Loan extends JFrame{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void clearAccData() {
+		tfAccID.setText("");
+		tfFirst.setText("");
+		tfMiddle.setText("");
+		tfLast.setText("");
+		tfAddress.setText("");
+		tfEmail.setText("");
+		tfMonthlyIncome.setText("");
+		cbTenure.setSelectedIndex(0);
+		cbMonth.setSelectedIndex(0);
+		cbDay.setSelectedIndex(0);
+		cbYear.setSelectedIndex(0);
+		cbYear.setSelectedIndex(116);
 	}
 	
 	private void createShowGUI(){
