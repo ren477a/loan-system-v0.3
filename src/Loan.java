@@ -443,6 +443,21 @@ public class Loan extends JFrame{
 						lblPaymentEvery.setText("Payment "+payBack);
 						tfBalance.setText(Double.toString(totalWithInterest));
 						tfPaid.setText("0");
+						String message = "Please verify:\n" 
+								+ "Loan amount: " + amount + "\n"
+								+ "Interest: " + (interest*100) + "%\n"
+								+ "Total payable: " + totalWithInterest + "\n"
+								+ "Payment every " + payBack + ": " + periodical + "\n"
+								+ "\nClick YES to proceed and NO to edit.";
+						int reply = JOptionPane.showConfirmDialog(null, message, "Apply loan", JOptionPane.YES_NO_OPTION);
+						if(reply == JOptionPane.YES_OPTION) {
+							btnCalculate.setEnabled(false);
+							btnPay.setEnabled(true);
+							tfAmount.setEditable(false);
+							cbLoanTerm.setEnabled(false);
+							cbPayBack.setEnabled(false);
+						}
+							
 					} else {
 						JOptionPane.showMessageDialog(null, "Minimum loan amount is PHP 10,000 and maximum amount is PHP 5,000,000", "Warning", JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -469,7 +484,9 @@ public class Loan extends JFrame{
 			else if(ae.getSource().equals(btnLoanCancel)) {
 				System.out.println("loan cancel");
 				endLoanOperation();
-				getLoanIDs();
+				clearLoanData();
+				clearAccData();
+				getAccountIDs();
 			}
 		}
 	}
@@ -497,6 +514,7 @@ public class Loan extends JFrame{
 		btnPay.setEnabled(true);
 		btnLoanCancel.setEnabled(true);
 		btnPay.setText("Submit");
+		btnPay.setEnabled(false);
 		listAcc.setEnabled(false);
 		btnApply.setEnabled(false);
 		btnSelAcc.setEnabled(false);
@@ -602,6 +620,9 @@ public class Loan extends JFrame{
 	public void clearLoanData() {
 		tfLoanID.setText("");
 		tfAmount.setText("");
+		tfTotalPayable.setText("");
+		tfPaymentEvery.setText("");
+		lblPaymentEvery.setText("Payment :");
 		tfBalance.setText("");
 		tfPaid.setText("");
 		btnPay.setEnabled(false);
