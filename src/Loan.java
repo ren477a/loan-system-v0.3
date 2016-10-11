@@ -18,7 +18,7 @@ public class Loan extends JFrame{
 	private JButton btnApply, btnSelAcc, btnDelAcc,			//panel1
 					btnUpdate, btnAccCancel,								//panel2
 					btnNewLoan, btnSelLoan, btnDelLoan,		//panel3
-					btnPay, btnLoanCancel;									//panel4
+					btnPay, btnCalculate, btnLoanCancel;									//panel4
 	private JList listAcc, listLoan;
 	private DefaultListModel<String> modelAcc, modelLoan;
 	private ButtonListener btnl;
@@ -63,11 +63,9 @@ public class Loan extends JFrame{
 		btnSelAcc.addActionListener(btnl);
 		btnDelAcc.addActionListener(btnl);
 		modelAcc = new DefaultListModel<String>();
-		getAccountIDs();
 		listAcc = new JList(modelAcc);
 		listAcc.setLayoutOrientation(JList.VERTICAL);
 		listAcc.setVisibleRowCount(3);
-		listAcc.setSelectedIndex(0);
 		JScrollPane scrollAcc = new JScrollPane(listAcc);
 		scrollAcc.setPreferredSize(new Dimension(300, 400));
 		JPanel pnl1Radio = new JPanel(new FlowLayout());
@@ -198,7 +196,7 @@ public class Loan extends JFrame{
 		lblBalance = new JLabel ("Balance:");
 		lblPaid = new JLabel("Paid:");
 		tfLoanID = new JTextField();
-		cbLoanTerm = new JComboBox<String>(new String[] {"6 months", "9 months", "12 months", "2 years", "3 years", "5 years", "10 years"});
+		cbLoanTerm = new JComboBox<String>(new String[] {"6 months", "12 months", "2 years", "3 years", "5 years", "10 years"});
 		cbPayBack = new JComboBox<String>(new String[] {"Every month", "Every quarter", "Every 6 months", "Every year"});
 		tfAmount = new JTextField();
 		tfTotalPayable = new JTextField();
@@ -215,12 +213,16 @@ public class Loan extends JFrame{
 		tfPaid.setEditable(false);
 		btnPay = new JButton("Pay");
 		btnPay.setEnabled(false);
+		btnCalculate = new JButton("Calculate");
+		btnCalculate.setEnabled(false);
+		btnCalculate.addActionListener(btnl);
 		btnLoanCancel = new JButton("Cancel");
 		btnLoanCancel.setEnabled(false);
 		btnLoanCancel.addActionListener(btnl);
 		btnPay.addActionListener(btnl);
 		JPanel pnl4South = new JPanel(new FlowLayout());
 		pnl4South.add(btnPay);
+		pnl4South.add(btnCalculate);
 		pnl4South.add(btnLoanCancel);
 		JPanel pnl4Center = new JPanel(new GridLayout(16, 1));
 		pnl4Center.add(lblLoanID);
@@ -271,6 +273,10 @@ public class Loan extends JFrame{
 		pnlCenter.add(pnlLoanInfo);
 		pnlCenter.setBorder(new EmptyBorder(20, 20, 20, 20));
 		add(pnlCenter);
+		
+
+		getAccountIDs();
+		listAcc.setSelectedIndex(0);
 		createShowGUI();
 		
 		
@@ -285,6 +291,7 @@ public class Loan extends JFrame{
 				JOptionPane.showMessageDialog(null,  "Please fill out the application form.", "Add new account", JOptionPane.INFORMATION_MESSAGE);
 				clearAccData();
 				clearLoanData();
+				modelLoan.removeAllElements();
 				enableAccInput();
 			} 
 			
@@ -328,7 +335,6 @@ public class Loan extends JFrame{
 								} else {
 									endAccOperation();
 									enableLoanInput();
-									btnPay.setEnabled(true);
 									
 								}
 								
@@ -379,31 +385,84 @@ public class Loan extends JFrame{
 			
 			
 			else if(ae.getSource().equals(btnPay)) {
-				if(tfLoanID.getText().equals("")) {
-					//validate
-					try {
-						double amount = Double.parseDouble(tfAmount.getText());
-						if(amount >= 10000 && amount <= 5000000) {
-							endLoanOperation();
-							btnPay.setEnabled(false);
-							//insert to accounts
-							//create loan_<id> table
-							//calculate payable, paymentevery, balance, paid
-						} else {
-							JOptionPane.showMessageDialog(null, "Minimum loan amount is PHP 10,000 and maximum amount is PHP 5,000,000", "Warning", JOptionPane.INFORMATION_MESSAGE);
-						}
-					} catch (NumberFormatException e) {
-						JOptionPane.showMessageDialog(null, "Please enter valid amount.", "Warning", JOptionPane.ERROR_MESSAGE);
-					}
-				}
+//				if(tfTotalPayable.getText().equals("")) {
+//					JOptionPane.showMessageDialog(null, "Press calculate to see total payable amount inclusive of interest.");
+//					
+//				}
 				System.out.println("Pay");
 			} 
 			
 			
+			else if(ae.getSource().equals(btnCalculate)) {
+				System.out.println("calculate");
+				try {
+					double amount = Double.parseDouble(tfAmount.getText());
+					if(amount >= 10000 && amount <= 5000000) {
+						//insert to accounts
+						//create loan_<id> table
+						//calculate payable, paymentevery, balance, paid
+						String loanTerm = cbLoanTerm.getSelectedItem().toString();
+						int dividend = 0, divisor = 0;
+						double interest = 0;
+						if(loanTerm.equals("6 months")) {
+							dividend = 6;
+							interest = 0.10;
+						} else if(loanTerm.equals("12 months")) {
+							dividend = 12;
+							interest = 0.125;
+						} 
+						else if(loanTerm.equals("2 years")) {
+							dividend = 24;
+							interest = 0.15;
+						} 
+						else if(loanTerm.equals("3 years")) {
+							dividend = 36;
+							interest = 0.175;
+						} 
+						else if(loanTerm.equals("5 years")) {
+							dividend = 60;
+							interest = 0.20;
+						} 
+						else if(loanTerm.equals("10 years")) {
+							dividend = 120;
+							interest = 0.25;
+						} 
+						String payBack = cbPayBack.getSelectedItem().toString();
+						if(payBack.equals("Every month"))
+							divisor = 1;
+						else if(payBack.equals("Every quarter"))
+							divisor = 3;
+						else if(payBack.equals("Every 6 months"))
+							divisor = 6;
+						else if(payBack.equals("Every year"))
+							divisor = 12;
+						double totalWithInterest = amount + amount * interest;
+						double periodical = totalWithInterest / (dividend / divisor);
+						tfTotalPayable.setText(Double.toString(totalWithInterest));
+						tfPaymentEvery.setText(Double.toString(periodical));
+						lblPaymentEvery.setText("Payment "+payBack);
+						tfBalance.setText(Double.toString(totalWithInterest));
+						tfPaid.setText("0");
+					} else {
+						JOptionPane.showMessageDialog(null, "Minimum loan amount is PHP 10,000 and maximum amount is PHP 5,000,000", "Warning", JOptionPane.INFORMATION_MESSAGE);
+					}
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(null, "Please enter valid amount.", "Warning", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			
+			
 			else if(ae.getSource().equals(btnAccCancel)) {
 				System.out.println("acc cancel");
-				loadAccData(Integer.parseInt(tfAccID.getText()));
-				endAccOperation();
+				if(!tfAccID.getText().isEmpty()){
+					loadAccData(Integer.parseInt(tfAccID.getText()));
+					endAccOperation();
+				} else {
+					endAccOperation();
+					getAccountIDs();
+				}
+					
+				
 			} 
 			
 			
@@ -433,7 +492,8 @@ public class Loan extends JFrame{
 		tfAmount.setEditable(true);
 		cbLoanTerm.setEnabled(true);
 		cbPayBack.setEnabled(true);
-		
+		btnCalculate.setEnabled(true);
+		btnPay.setEnabled(true);
 		btnLoanCancel.setEnabled(true);
 		btnPay.setText("Submit");
 		listAcc.setEnabled(false);
@@ -451,9 +511,10 @@ public class Loan extends JFrame{
 		tfAmount.setEditable(false);
 		cbLoanTerm.setEnabled(false);
 		cbPayBack.setEnabled(false);
-		
+		btnCalculate.setEnabled(false);
 		btnLoanCancel.setEnabled(false);
 		btnPay.setText("Pay");
+		btnPay.setEnabled(false);
 		listAcc.setEnabled(true);
 		btnApply.setEnabled(true);
 		btnSelAcc.setEnabled(true);
@@ -487,6 +548,7 @@ public class Loan extends JFrame{
 		cbYear.setEnabled(true);
 		btnPay.setEnabled(false);
 		btnUpdate.setText("Submit");
+		btnUpdate.setEnabled(true);
 		btnAccCancel.setEnabled(true);
 	}
 	
@@ -608,7 +670,11 @@ public class Loan extends JFrame{
 				modelAcc.addElement(rs.getInt("id") + " - " + rs.getString("lastname") + ", " 
 									+ rs.getString("firstname") + " " + rs.getString("middlename"));
 			}
-			
+			listAcc.setSelectedIndex(0);
+			btnUpdate.setEnabled(false);
+			btnNewLoan.setEnabled(false);
+			btnSelLoan.setEnabled(false);
+			btnDelLoan.setEnabled(false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
