@@ -321,6 +321,7 @@ public class Loan extends JFrame{
 				if(!onOP) {
 					//enter update mode
 					enableAccInput();
+					clearLoanData();
 				} else {
 					if(tfAccID.getText().equals("")) {
 						//submit for application
@@ -351,7 +352,6 @@ public class Loan extends JFrame{
 												", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
 												"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
 							endAccOperation();
-							
 						} catch (SQLException e) {
 							JOptionPane.showMessageDialog(null, "Enter valid data only.", "Invalid input!", JOptionPane.ERROR_MESSAGE);
 						}
@@ -469,6 +469,7 @@ public class Loan extends JFrame{
 			else if(ae.getSource().equals(btnLoanCancel)) {
 				System.out.println("loan cancel");
 				endLoanOperation();
+				getLoanIDs();
 			}
 		}
 	}
