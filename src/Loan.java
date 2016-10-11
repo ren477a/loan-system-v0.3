@@ -55,6 +55,7 @@ public class Loan extends JFrame{
 		bgSortBy = new ButtonGroup();
 		bgSortBy.add(rbByID);
 		bgSortBy.add(rbByName);
+		rbByID.setSelected(true);
 		btnApply = new JButton("Apply");
 		btnSelAcc = new JButton("Select");
 		btnDelAcc = new JButton("Delete");
@@ -156,6 +157,7 @@ public class Loan extends JFrame{
 		bg2SortBy = new ButtonGroup();
 		bg2SortBy.add(rbLoanByID);
 		bg2SortBy.add(rbLoanByAmount);
+		rbLoanByID.setSelected(true);
 		lblSelectLoan = new JLabel("Select Loan:");
 		lblLoanSortBy = new JLabel("Sort by:");
 		btnNewLoan = new JButton("New");
@@ -208,6 +210,7 @@ public class Loan extends JFrame{
 		tfBalance.setEditable(false);
 		tfPaid.setEditable(false);
 		btnPay = new JButton("Pay");
+		btnPay.setEnabled(false);
 		btnLoanCancel = new JButton("Cancel");
 		btnLoanCancel.setEnabled(false);
 		btnLoanCancel.addActionListener(btnl);
@@ -293,6 +296,7 @@ public class Loan extends JFrame{
 				listLoan.setSelectedIndex(0);
 				//clear loan details text fields
 				clearLoanData();
+				btnPay.setEnabled(false);
 			} 
 			
 			
@@ -322,6 +326,8 @@ public class Loan extends JFrame{
 								} else {
 									endAccOperation();
 									enableLoanInput();
+									btnPay.setEnabled(true);
+									
 								}
 								
 							} catch (NumberFormatException e) {
@@ -339,7 +345,7 @@ public class Loan extends JFrame{
 												"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
 							endAccOperation();
 						} catch (SQLException e) {
-							e.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Enter valid data only.", "Invalid input!", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 					
@@ -361,6 +367,7 @@ public class Loan extends JFrame{
 				int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
 				//load loan data to loan details text fields
 				loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
+				
 			} 
 			
 			
@@ -376,6 +383,7 @@ public class Loan extends JFrame{
 						double amount = Double.parseDouble(tfAmount.getText());
 						if(amount >= 10000 && amount <= 5000000) {
 							endLoanOperation();
+							btnPay.setEnabled(false);
 							//insert to accounts
 							//create loan_<id> table
 							//calculate payable, paymentevery, balance, paid
@@ -392,6 +400,8 @@ public class Loan extends JFrame{
 			
 			else if(ae.getSource().equals(btnAccCancel)) {
 				System.out.println("acc cancel");
+				clearAccData();
+				modelLoan.clear();
 				endAccOperation();
 			} 
 			
@@ -499,7 +509,6 @@ public class Loan extends JFrame{
 		cbMonth.setEnabled(false);
 		cbDay.setEnabled(false);
 		cbYear.setEnabled(false);
-		btnPay.setEnabled(true);
 		btnUpdate.setText("Update");
 		btnAccCancel.setEnabled(false);
 	}
@@ -509,6 +518,7 @@ public class Loan extends JFrame{
 			rs = comm.executeQuery("SELECT * FROM loan_"+ accID +" Where id="+ loanID);
 			rs.next();
 			viewLoanData();
+			btnPay.setEnabled(true);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
