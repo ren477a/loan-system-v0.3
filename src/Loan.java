@@ -4,6 +4,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.text.DecimalFormat;
+import java.util.Formatter;
 
 public class Loan extends JFrame{
 	private JLabel lblSelectAcc, lblSortBy, 								//panel 1
@@ -196,7 +198,7 @@ public class Loan extends JFrame{
 		lblBalance = new JLabel ("Balance:");
 		lblPaid = new JLabel("Paid:");
 		tfLoanID = new JTextField();
-		cbLoanTerm = new JComboBox<String>(new String[] {"6 months", "12 months", "2 years", "3 years", "5 years", "10 years"});
+		cbLoanTerm = new JComboBox<String>(new String[] {"12 months", "2 years", "3 years", "5 years", "10 years"});
 		cbPayBack = new JComboBox<String>(new String[] {"Every month", "Every quarter", "Every 6 months", "Every year"});
 		tfAmount = new JTextField();
 		tfTotalPayable = new JTextField();
@@ -404,10 +406,7 @@ public class Loan extends JFrame{
 						String loanTerm = cbLoanTerm.getSelectedItem().toString();
 						int dividend = 0, divisor = 0;
 						double interest = 0;
-						if(loanTerm.equals("6 months")) {
-							dividend = 6;
-							interest = 0.10;
-						} else if(loanTerm.equals("12 months")) {
+						if(loanTerm.equals("12 months")) {
 							dividend = 12;
 							interest = 0.125;
 						} 
@@ -456,6 +455,7 @@ public class Loan extends JFrame{
 							tfAmount.setEditable(false);
 							cbLoanTerm.setEnabled(false);
 							cbPayBack.setEnabled(false);
+							JOptionPane.showMessageDialog(null, "Click SUBMIT to submit loan application or click CANCEL to discard.", "Loan application", JOptionPane.INFORMATION_MESSAGE);
 						}
 							
 					} else {
