@@ -443,10 +443,10 @@ public class Loan extends JFrame{
 						tfBalance.setText(Double.toString(totalWithInterest));
 						tfPaid.setText("0");
 						String message = "Please verify:\n" 
-								+ "Loan amount: " + amount + "\n"
+								+ "Loan amount: " + String.format("%.2f", amount) + "\n"
 								+ "Interest: " + (interest*100) + "%\n"
-								+ "Total payable: " + totalWithInterest + "\n"
-								+ "Payment every " + payBack + ": " + periodical + "\n"
+								+ "Total payable: " + String.format("%.2f", totalWithInterest) + "\n"
+								+ "Payment every " + payBack + ": " + String.format("%.2f", periodical) + "\n"
 								+ "\nClick YES to proceed and NO to edit.";
 						int reply = JOptionPane.showConfirmDialog(null, message, "Apply loan", JOptionPane.YES_NO_OPTION);
 						if(reply == JOptionPane.YES_OPTION) {
