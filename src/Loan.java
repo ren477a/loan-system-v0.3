@@ -123,6 +123,7 @@ public class Loan extends JFrame{
 		pnlBirth.add(cbDay);
 		pnlBirth.add(cbYear);
 		btnUpdate = new JButton("Update");
+		btnUpdate.setEnabled(false);
 		btnAccCancel = new JButton("Cancel");
 		btnAccCancel.setEnabled(false);
 		btnAccCancel.addActionListener(btnl);
@@ -166,6 +167,9 @@ public class Loan extends JFrame{
 		btnNewLoan.addActionListener(btnl);
 		btnSelLoan.addActionListener(btnl);
 		btnDelLoan.addActionListener(btnl);
+		btnNewLoan.setEnabled(false);
+		btnSelLoan.setEnabled(false);
+		btnDelLoan.setEnabled(false);
 		modelLoan = new DefaultListModel<String>();
 		listLoan = new JList(modelLoan);
 		listLoan.setLayoutOrientation(JList.VERTICAL);
@@ -296,7 +300,7 @@ public class Loan extends JFrame{
 				listLoan.setSelectedIndex(0);
 				//clear loan details text fields
 				clearLoanData();
-				btnPay.setEnabled(false);
+				
 			} 
 			
 			
@@ -308,10 +312,8 @@ public class Loan extends JFrame{
 			else if(ae.getSource().equals(btnUpdate)) {
 				System.out.println("Update record");
 				if(!onOP) {
-					if(tfAccID.getText().equals(""))
-						JOptionPane.showMessageDialog(null, "Please select an account to update.","Warning", JOptionPane.INFORMATION_MESSAGE);
-					else 
-						enableAccInput();
+					//enter update mode
+					enableAccInput();
 				} else {
 					if(tfAccID.getText().equals("")) {
 						//submit for application
@@ -333,10 +335,9 @@ public class Loan extends JFrame{
 							} catch (NumberFormatException e) {
 								JOptionPane.showMessageDialog(null,  "Enter valid monthly income!", "Error", JOptionPane.ERROR_MESSAGE);
 							}
-							
 						}
-						
 					} else {
+						//UPDATE MODE
 						//submit for update
 						try {
 							comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
@@ -344,6 +345,7 @@ public class Loan extends JFrame{
 												", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
 												"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
 							endAccOperation();
+							
 						} catch (SQLException e) {
 							JOptionPane.showMessageDialog(null, "Enter valid data only.", "Invalid input!", JOptionPane.ERROR_MESSAGE);
 						}
@@ -400,8 +402,7 @@ public class Loan extends JFrame{
 			
 			else if(ae.getSource().equals(btnAccCancel)) {
 				System.out.println("acc cancel");
-				clearAccData();
-				modelLoan.clear();
+				loadAccData(Integer.parseInt(tfAccID.getText()));
 				endAccOperation();
 			} 
 			
@@ -540,6 +541,7 @@ public class Loan extends JFrame{
 		tfAmount.setText("");
 		tfBalance.setText("");
 		tfPaid.setText("");
+		btnPay.setEnabled(false);
 	}
 	
 	public void loadAccData(int id){
@@ -547,6 +549,10 @@ public class Loan extends JFrame{
 			rs = comm.executeQuery("SELECT * FROM accounts Where id="+id);
 			rs.next();
 			viewAccData();
+			btnUpdate.setEnabled(true);
+			btnNewLoan.setEnabled(true);
+			btnSelLoan.setEnabled(true);
+			btnDelLoan.setEnabled(true);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
