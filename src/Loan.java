@@ -427,6 +427,7 @@ public class Loan extends JFrame{
 				System.out.println(accID);
 				try {
 					comm.executeUpdate("DELETE FROM loan_"+ accID +" WHERE id=" + loanID);
+					comm.executeUpdate("DROP TABLE duedate_acc"+accID+"_loan"+loanID);
 					getLoanIDs();
 					listLoan.setSelectedIndex(0);
 				} catch (SQLException e) {
