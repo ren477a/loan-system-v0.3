@@ -447,18 +447,9 @@ public class Loan extends JFrame{
 							+ "'" + tfEmail.getText() + "', "
 							+ "'" + cbTenure.getSelectedItem().toString() + "', "
 							+ "" + tfMonthlyIncome.getText() + ")");
-						rs = comm.executeQuery("SELECT id FROM accounts WHERE firstname='" + tfFirst.getText() + "' AND "
-								+ "middlename='" + tfMiddle.getText() + "' AND "
-								+ "lastname='" + tfLast.getText() + "' AND "
-								+ "bday_month='" + cbMonth.getSelectedItem().toString() + "' AND "
-								+ "bday_day=" + cbDay.getSelectedItem().toString() + " AND "
-								+ "bday_year=" + cbYear.getSelectedItem().toString() + " AND "
-								+ "address='" + tfAddress.getText() + "' AND "
-								+ "email='" + tfEmail.getText() + "' AND "
-								+ "tenure='" + cbTenure.getSelectedItem().toString() + "' AND "
-								+ "monthly_income=" + tfMonthlyIncome.getText());
+						rs = comm.executeQuery("SELECT MAX(id) FROM accounts ");
 						rs.next();
-						int accID = rs.getInt("id");
+						int accID = rs.getInt("MAX(id)");
 
 						comm.executeUpdate("CREATE TABLE loan_" + accID
 								+ "(id INT PRIMARY KEY AUTO_INCREMENT, "
@@ -475,6 +466,9 @@ public class Loan extends JFrame{
 								+ "" + tfPaymentEvery.getText() + ", "
 								+ "" + tfBalance.getText() + ", "
 								+ "" + tfPaid.getText() + ")");
+						rs = comm.executeQuery("SELECT MAX(id) FROM loan_" + accID);
+						rs.next();
+						generateDueDates(accID, rs.getInt("MAX(id)"));
 						getAccountIDs();
 						clearAccData();
 						endLoanOperation();
@@ -502,6 +496,9 @@ public class Loan extends JFrame{
 								+ "" + tfBalance.getText() + ", "
 								+ "" + tfPaid.getText() + ")");
 							modelLoan.removeAllElements();
+							rs = comm.executeQuery("SELECT MAX(id) FROM loan_" + tfAccID.getText());
+							rs.next();
+							generateDueDates(Integer.parseInt(tfAccID.getText()), rs.getInt("MAX(id)"));
 						} catch(SQLException e) {
 							e.printStackTrace();
 						}
@@ -641,7 +638,33 @@ public class Loan extends JFrame{
 		}
 	}
 	
-	private void generateDueDates(int term, int every) {
+	private void generateDueDates(int accID, int loanID) {
+		try {
+			comm.executeUpdate("CREATE TABLE duedate_acc"+accID+"_loan"+loanID
+					+ " (period INT PRIMARY KEY NOT NULL, date VARCHAR(12) NOT NULL, status VARCHAR(20))");
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		int term = 0;
+		if(cbLoanTerm.getSelectedIndex()==0)
+			term = 12;
+		else if(cbLoanTerm.getSelectedIndex()==1)
+			term = 24;
+		else if(cbLoanTerm.getSelectedIndex()==2)
+			term = 36;
+		else if(cbLoanTerm.getSelectedIndex()==3)
+			term = 60;
+		else if(cbLoanTerm.getSelectedIndex()==4)
+			term = 120;
+		int every = 0;
+		if(cbPayBack.getSelectedIndex()==0)
+			every = 1;
+		else if(cbPayBack.getSelectedIndex()==1)
+			every = 3;
+		else if(cbPayBack.getSelectedIndex()==2)
+			every = 6;
+		else if(cbPayBack.getSelectedIndex()==3)
+			every = 12;
 		int periods = term / every;
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
@@ -667,6 +690,12 @@ public class Loan extends JFrame{
 			if(day<10)
 				startDate+= "0";
 			startDate += day + "/" + year;
+			try {
+				comm.executeUpdate("INSERT INTO duedate_acc"+accID+"_loan"+loanID + " VALUES("
+						+ i + ", '" + startDate + "', 'UNPAID')");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			System.out.println("Period " + i + ":\t" +startDate);
 		}
 	}
