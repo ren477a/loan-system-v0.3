@@ -323,6 +323,10 @@ public class Loan extends JFrame{
 				try {
 					comm.executeUpdate("DELETE FROM accounts WHERE id=" + accID);
 					comm.executeUpdate("DROP TABLE loan_" + accID);
+					rs = comm.executeQuery("SELECT CONCAT( 'DROP TABLE ', GROUP_CONCAT(table_name) , ';' ) "
+							+ "AS statement FROM information_schema.tables WHERE table_name LIKE 'duedate_acc"+accID+"_%'");
+					rs.next();
+					comm.executeUpdate(rs.getString("statement"));
 					clearAccData();
 					clearLoanData();
 					modelLoan.removeAllElements();
