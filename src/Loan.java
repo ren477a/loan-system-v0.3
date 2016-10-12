@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Formatter;
 
 public class Loan extends JFrame{
@@ -589,13 +591,13 @@ public class Loan extends JFrame{
 						lblPaymentEvery.setText("Payment "+payBack);
 						tfBalance.setText(Double.toString(totalWithInterest));
 						tfPaid.setText("0");
-						String message = "Please verify:\n" 
-								+ "Loan amount: " + String.format("%.2f", amount) + "\n"
-								+ "Interest: " + (interest*100) + "%\n"
-								+ "Total payable: " + String.format("%.2f", totalWithInterest) + "\n"
-								+ "Payment every " + payBack + ": " + String.format("%.2f", periodical) + "\n"
+						String message = "Loan amount: " + String.format("%.2f", amount) + "\n\n"
+								+ "Interest: " + (interest*100) + "%\n\n"
+								+ "Total payable: " + String.format("%.2f", totalWithInterest) + "\n\n"
+								+ "Payment every " + payBack + ": " + String.format("%.2f", periodical) + "\n\n"
+								+ "Date loaned: " + new Date().toString() + "\n\n"
 								+ "\nClick YES to proceed and NO to edit.";
-						int reply = JOptionPane.showConfirmDialog(null, message, "Apply loan", JOptionPane.YES_NO_OPTION);
+						int reply = JOptionPane.showConfirmDialog(null, message, "Please verify", JOptionPane.YES_NO_OPTION);
 						if(reply == JOptionPane.YES_OPTION) {
 							btnCalculate.setEnabled(false);
 							btnPay.setEnabled(true);
@@ -639,7 +641,35 @@ public class Loan extends JFrame{
 		}
 	}
 	
-
+	private void generateDueDates(int term, int every) {
+		int periods = term / every;
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		System.out.println(format.format(date));
+		String startDate = format.format(date);
+		for(int i = 1; i <= periods; i++) {
+			int month = Integer.parseInt(startDate.substring(0, 2));
+			int day = Integer.parseInt(startDate.substring(3, 5));
+			int year = Integer.parseInt(startDate.substring(6));
+			int adjustYear = (month + every) / 12;
+			month = (month + every) % 12;
+			if(month==0)
+				month=12;
+			if(month >= 12)
+				adjustYear = 0;
+			year += adjustYear;
+			if(day>28 && month==2)
+				day = 28;
+			startDate = "";
+			if(month<10)
+				startDate += "0";
+			startDate += month + "/";
+			if(day<10)
+				startDate+= "0";
+			startDate += day + "/" + year;
+			System.out.println("Period " + i + ":\t" +startDate);
+		}
+	}
 	
 	public void enableLoanInput() {
 		tfAmount.setEditable(true);
