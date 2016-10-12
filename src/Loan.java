@@ -393,6 +393,10 @@ public class Loan extends JFrame{
 				int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
 				//load loan data to loan details text fields
 				loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
+				if(Double.parseDouble(tfBalance.getText()) == 0)
+					btnPay.setEnabled(false);
+				else
+					btnPay.setEnabled(true);
 				
 			} 
 			
@@ -415,7 +419,6 @@ public class Loan extends JFrame{
 			
 			
 			else if(ae.getSource().equals(btnPay)) {
-				System.out.println("Pay");
 				if(tfAccID.getText().isEmpty()) {
 					
 					try {
@@ -465,7 +468,7 @@ public class Loan extends JFrame{
 						btnNewLoan.setEnabled(false);
 						btnSelLoan.setEnabled(false);
 						btnDelLoan.setEnabled(false);
-						
+						clearLoanData();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -494,8 +497,9 @@ public class Loan extends JFrame{
 //					System.out.println(tfBalance.getText());
 //					System.out.println(tfPaid.getText());
 				} else {
-					try {
-						comm.executeUpdate("INSERT INTO loan_" + tfAccID.getText()
+					if(tfLoanID.getText().isEmpty()) {
+						try {
+							comm.executeUpdate("INSERT INTO loan_" + tfAccID.getText()
 								+ " VALUES(null, '" + cbLoanTerm.getSelectedItem().toString() + "', "
 								+ "'" + cbPayBack.getSelectedItem().toString() + "', "
 								+ "" + tfAmount.getText() + ", "
@@ -503,19 +507,39 @@ public class Loan extends JFrame{
 								+ "" + tfPaymentEvery.getText() + ", "
 								+ "" + tfBalance.getText() + ", "
 								+ "" + tfPaid.getText() + ")");
-						modelLoan.removeAllElements();
-					} catch(SQLException e) {
-						e.printStackTrace();
+							modelLoan.removeAllElements();
+						} catch(SQLException e) {
+							e.printStackTrace();
+						}
+						System.out.println("New loan submitted");
+						getLoanIDs();
+						listLoan.setSelectedIndex(0);
+						clearLoanData();
+						endLoanOperation();
+					} else {
+						System.out.println("PAY");
+						double payment = Double.parseDouble(tfPaymentEvery.getText());
+						double balance = Double.parseDouble(tfBalance.getText());
+						double paid = Double.parseDouble(tfPaid.getText());
+						balance -= payment;
+						if(balance >= 0) {
+							paid += payment;
+							tfBalance.setText(Double.toString(balance));
+							tfPaid.setText(Double.toString(paid));
+//							System.out.println("UPDATE loan_" + tfLoanID.getText() + " SET balance=" + balance
+//									+ ", paid=" + paid + " WHERE id=" + tfLoanID.getText());
+							try {
+								comm.executeUpdate("UPDATE loan_" + tfAccID.getText() + " SET balance=" + balance
+										+ ", paid=" + paid + " WHERE id=" + tfLoanID.getText());
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+						}
 					}
-					System.out.println("New loan submitted");
-					getLoanIDs();
-					listLoan.setSelectedIndex(0);
-					endLoanOperation();
+					
 				}
-				
-				
-				
-				clearLoanData();
 				
 			} 
 			
