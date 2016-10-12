@@ -845,7 +845,7 @@ public class Loan extends JFrame{
 			modelLoan.removeAllElements();
 			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText() + " ORDER BY id");
 			while(rs.next()){
-				modelLoan.addElement(rs.getInt("id") + " - " + rs.getDouble("Amount"));
+				modelLoan.addElement(rs.getInt("id") + " - " + rs.getDouble("Amount") + " --Balance: " + String.format("%.2f", rs.getDouble("balance")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
