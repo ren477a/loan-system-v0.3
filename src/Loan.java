@@ -422,6 +422,7 @@ public class Loan extends JFrame{
 				try {
 					comm.executeUpdate("DELETE FROM loan_"+ accID +" WHERE id=" + loanID);
 					getLoanIDs();
+					listLoan.setSelectedIndex(0);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -513,6 +514,9 @@ public class Loan extends JFrame{
 						double balance = Double.parseDouble(tfBalance.getText());
 						double paid = Double.parseDouble(tfPaid.getText());
 						balance -= payment;
+						if(balance < 1)
+							balance = 0;
+						
 						if(balance >= 0) {
 							paid += payment;
 							tfBalance.setText(Double.toString(balance));
@@ -524,6 +528,8 @@ public class Loan extends JFrame{
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
+							if(balance == 0)
+								JOptionPane.showMessageDialog(null, "Selected loan is now fully paid.", "Notice", JOptionPane.INFORMATION_MESSAGE);
 							if(balance == 0)
 								btnPay.setEnabled(false);
 							
@@ -539,7 +545,7 @@ public class Loan extends JFrame{
 				System.out.println("calculate");
 				try {
 					double amount = Double.parseDouble(tfAmount.getText());
-					if(amount >= 10000 && amount <= 5000000) {
+					if(amount >= 10000 && amount <= 20000000) {
 						//insert to accounts
 						//create loan_<id> table
 						//calculate payable, paymentevery, balance, paid
@@ -599,7 +605,7 @@ public class Loan extends JFrame{
 						}
 							
 					} else {
-						JOptionPane.showMessageDialog(null, "Minimum loan amount is PHP 10,000 and maximum amount is PHP 5,000,000", "Warning", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Minimum loan amount is PHP 10,000 and maximum amount is PHP 20,000,000", "Warning", JOptionPane.INFORMATION_MESSAGE);
 					}
 				} catch (NumberFormatException e) {
 					JOptionPane.showMessageDialog(null, "Please enter valid amount.", "Warning", JOptionPane.ERROR_MESSAGE);
