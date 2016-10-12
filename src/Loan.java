@@ -534,6 +534,7 @@ public class Loan extends JFrame{
 								btnPay.setEnabled(false);
 							
 						}
+						getLoanIDs();
 					}
 					
 				}
@@ -847,6 +848,7 @@ public class Loan extends JFrame{
 			while(rs.next()){
 				modelLoan.addElement(rs.getInt("id") + " - " + rs.getDouble("Amount") + " --Balance: " + String.format("%.2f", rs.getDouble("balance")));
 			}
+			listLoan.setSelectedIndex(0);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
