@@ -368,6 +368,8 @@ public class Loan extends JFrame{
 			
 			else if(ae.getSource().equals(btnNewLoan)) {
 				System.out.println("New loan");
+				clearLoanData();
+				enableLoanInput();
 			} 
 			
 			
@@ -387,11 +389,121 @@ public class Loan extends JFrame{
 			
 			
 			else if(ae.getSource().equals(btnPay)) {
-//				if(tfTotalPayable.getText().equals("")) {
-//					JOptionPane.showMessageDialog(null, "Press calculate to see total payable amount inclusive of interest.");
-//					
-//				}
 				System.out.println("Pay");
+				if(tfAccID.getText().isEmpty()) {
+//					System.out.println("INSERT INTO accounts " 
+//							+ "VALUES(null, '" + tfFirst.getText() + "', "
+//							+ "'" + tfMiddle.getText() + "', "
+//							+ "'" + tfLast.getText() + "', "
+//							+ "'" + cbMonth.getSelectedItem().toString() + "', "
+//							+ "" + cbDay.getSelectedItem().toString() + ", "
+//							+ "" + cbYear.getSelectedItem().toString() + ", "
+//							+ "'" + tfAddress.getText() + "', "
+//							+ "'" + tfEmail.getText() + "', "
+//							+ "'" + cbTenure.getSelectedItem().toString() + "', "
+//							+ "" + tfMonthlyIncome.getText() + ")");
+//					
+//					System.out.println("SELECT id FROM accounts WHERE firstname='" + tfFirst.getText() + "' AND "
+//							+ "middlename='" + tfMiddle.getText() + "' AND "
+//							+ "lastname='" + tfLast.getText() + "' AND "
+//							+ "bday_month='" + cbMonth.getSelectedItem().toString() + "' AND "
+//							+ "bday_day=" + cbDay.getSelectedItem().toString() + " AND "
+//							+ "bday_year=" + cbYear.getSelectedItem().toString() + " AND "
+//							+ "address='" + tfAddress.getText() + "' AND "
+//							+ "email='" + tfEmail.getText() + "' AND "
+//							+ "tenure='" + cbTenure.getSelectedItem().toString() + "' AND "
+//							+ "monthly_income=" + tfMonthlyIncome.getText());
+					
+					try {
+						comm.executeUpdate("INSERT INTO accounts " 
+							+ "VALUES(null, '" + tfFirst.getText() + "', "
+							+ "'" + tfMiddle.getText() + "', "
+							+ "'" + tfLast.getText() + "', "
+							+ "'" + cbMonth.getSelectedItem().toString() + "', "
+							+ "" + cbDay.getSelectedItem().toString() + ", "
+							+ "" + cbYear.getSelectedItem().toString() + ", "
+							+ "'" + tfAddress.getText() + "', "
+							+ "'" + tfEmail.getText() + "', "
+							+ "'" + cbTenure.getSelectedItem().toString() + "', "
+							+ "" + tfMonthlyIncome.getText() + ")");
+						rs = comm.executeQuery("SELECT id FROM accounts WHERE firstname='" + tfFirst.getText() + "' AND "
+								+ "middlename='" + tfMiddle.getText() + "' AND "
+								+ "lastname='" + tfLast.getText() + "' AND "
+								+ "bday_month='" + cbMonth.getSelectedItem().toString() + "' AND "
+								+ "bday_day=" + cbDay.getSelectedItem().toString() + " AND "
+								+ "bday_year=" + cbYear.getSelectedItem().toString() + " AND "
+								+ "address='" + tfAddress.getText() + "' AND "
+								+ "email='" + tfEmail.getText() + "' AND "
+								+ "tenure='" + cbTenure.getSelectedItem().toString() + "' AND "
+								+ "monthly_income=" + tfMonthlyIncome.getText());
+						rs.next();
+						int accID = rs.getInt("id");
+//						System.out.println("CREATE TABLE loan_" + accID
+//								+ "(id INT PRIMARY KEY AUTO_INCREMENT, "
+//								+ "term VARCHAR(50) NOT NULL, payback VARCHAR(50) NOT NULL, "
+//								+ "amount DOUBLE NOT NULL, total DOUBLE NOT NULL, periodical DOUBLE NOT NULL," 
+//								+ "balance DOUBLE NOT NULL, paid DOUBLE NOT NULL)");
+						
+						comm.executeUpdate("CREATE TABLE loan_" + accID
+								+ "(id INT PRIMARY KEY AUTO_INCREMENT, "
+								+ "term VARCHAR(50) NOT NULL, payback VARCHAR(50) NOT NULL, "
+								+ "amount DOUBLE NOT NULL, total DOUBLE NOT NULL, periodical DOUBLE NOT NULL," 
+								+ "balance DOUBLE NOT NULL, paid DOUBLE NOT NULL)");
+						
+//						System.out.println("INSERT INTO loan_" + accID
+//								+ " VALUES(null, '" + cbLoanTerm.getSelectedItem().toString() + "', "
+//								+ "'" + cbPayBack.getSelectedItem().toString() + "', "
+//								+ "" + tfAmount.getText() + ", "
+//								+ "" + tfTotalPayable.getText() + ", "
+//								+ "" + tfPaymentEvery.getText() + ", "
+//								+ "" + tfBalance.getText() + ", "
+//								+ "" + tfPaid.getText() + ")");
+						
+						comm.executeUpdate("INSERT INTO loan_" + accID
+								+ " VALUES(null, '" + cbLoanTerm.getSelectedItem().toString() + "', "
+								+ "'" + cbPayBack.getSelectedItem().toString() + "', "
+								+ "" + tfAmount.getText() + ", "
+								+ "" + tfTotalPayable.getText() + ", "
+								+ "" + tfPaymentEvery.getText() + ", "
+								+ "" + tfBalance.getText() + ", "
+								+ "" + tfPaid.getText() + ")");
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					System.out.println("Application submitted");
+//					System.out.println(tfAccID.getText());
+//					System.out.println(tfFirst.getText());
+//					System.out.println(tfMiddle.getText());
+//					System.out.println(tfLast.getText());
+//					System.out.println(cbMonth.getSelectedItem().toString());
+//					System.out.println(cbDay.getSelectedItem().toString());
+//					System.out.println(cbYear.getSelectedItem().toString());
+//					System.out.println(tfAddress.getText());
+//					System.out.println(tfEmail.getText());
+//					System.out.println(cbTenure.getSelectedItem().toString());
+//					System.out.println(tfMonthlyIncome.getText());
+//					
+//					System.out.println(tfLoanID.getText());
+//					System.out.println(cbLoanTerm.getSelectedItem().toString());
+//					System.out.println(cbPayBack.getSelectedItem().toString());
+//					System.out.println(tfAmount.getText());
+//					System.out.println(tfTotalPayable.getText());
+//					System.out.println(tfPaymentEvery.getText());
+//					System.out.println(tfBalance.getText());
+//					System.out.println(tfPaid.getText());
+				} else {
+					System.out.println("New loan submitted");
+					System.out.println(tfLoanID.getText());
+					System.out.println(cbLoanTerm.getSelectedItem().toString());
+					System.out.println(cbPayBack.getSelectedItem().toString());
+					System.out.println(tfAmount.getText());
+					System.out.println(tfTotalPayable.getText());
+					System.out.println(tfPaymentEvery.getText());
+					System.out.println(tfBalance.getText());
+					System.out.println(tfPaid.getText());
+				}
 			} 
 			
 			
@@ -455,7 +567,7 @@ public class Loan extends JFrame{
 							tfAmount.setEditable(false);
 							cbLoanTerm.setEnabled(false);
 							cbPayBack.setEnabled(false);
-							JOptionPane.showMessageDialog(null, "Click SUBMIT to submit loan application or click CANCEL to discard.", "Loan application", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Click SUBMIT to proceed or click CANCEL to discard.", "Loan application", JOptionPane.INFORMATION_MESSAGE);
 						}
 							
 					} else {
