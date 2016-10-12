@@ -391,28 +391,6 @@ public class Loan extends JFrame{
 			else if(ae.getSource().equals(btnPay)) {
 				System.out.println("Pay");
 				if(tfAccID.getText().isEmpty()) {
-//					System.out.println("INSERT INTO accounts " 
-//							+ "VALUES(null, '" + tfFirst.getText() + "', "
-//							+ "'" + tfMiddle.getText() + "', "
-//							+ "'" + tfLast.getText() + "', "
-//							+ "'" + cbMonth.getSelectedItem().toString() + "', "
-//							+ "" + cbDay.getSelectedItem().toString() + ", "
-//							+ "" + cbYear.getSelectedItem().toString() + ", "
-//							+ "'" + tfAddress.getText() + "', "
-//							+ "'" + tfEmail.getText() + "', "
-//							+ "'" + cbTenure.getSelectedItem().toString() + "', "
-//							+ "" + tfMonthlyIncome.getText() + ")");
-//					
-//					System.out.println("SELECT id FROM accounts WHERE firstname='" + tfFirst.getText() + "' AND "
-//							+ "middlename='" + tfMiddle.getText() + "' AND "
-//							+ "lastname='" + tfLast.getText() + "' AND "
-//							+ "bday_month='" + cbMonth.getSelectedItem().toString() + "' AND "
-//							+ "bday_day=" + cbDay.getSelectedItem().toString() + " AND "
-//							+ "bday_year=" + cbYear.getSelectedItem().toString() + " AND "
-//							+ "address='" + tfAddress.getText() + "' AND "
-//							+ "email='" + tfEmail.getText() + "' AND "
-//							+ "tenure='" + cbTenure.getSelectedItem().toString() + "' AND "
-//							+ "monthly_income=" + tfMonthlyIncome.getText());
 					
 					try {
 						comm.executeUpdate("INSERT INTO accounts " 
@@ -438,26 +416,13 @@ public class Loan extends JFrame{
 								+ "monthly_income=" + tfMonthlyIncome.getText());
 						rs.next();
 						int accID = rs.getInt("id");
-//						System.out.println("CREATE TABLE loan_" + accID
-//								+ "(id INT PRIMARY KEY AUTO_INCREMENT, "
-//								+ "term VARCHAR(50) NOT NULL, payback VARCHAR(50) NOT NULL, "
-//								+ "amount DOUBLE NOT NULL, total DOUBLE NOT NULL, periodical DOUBLE NOT NULL," 
-//								+ "balance DOUBLE NOT NULL, paid DOUBLE NOT NULL)");
-						
+
 						comm.executeUpdate("CREATE TABLE loan_" + accID
 								+ "(id INT PRIMARY KEY AUTO_INCREMENT, "
 								+ "term VARCHAR(50) NOT NULL, payback VARCHAR(50) NOT NULL, "
 								+ "amount DOUBLE NOT NULL, total DOUBLE NOT NULL, periodical DOUBLE NOT NULL," 
 								+ "balance DOUBLE NOT NULL, paid DOUBLE NOT NULL)");
-						
-//						System.out.println("INSERT INTO loan_" + accID
-//								+ " VALUES(null, '" + cbLoanTerm.getSelectedItem().toString() + "', "
-//								+ "'" + cbPayBack.getSelectedItem().toString() + "', "
-//								+ "" + tfAmount.getText() + ", "
-//								+ "" + tfTotalPayable.getText() + ", "
-//								+ "" + tfPaymentEvery.getText() + ", "
-//								+ "" + tfBalance.getText() + ", "
-//								+ "" + tfPaid.getText() + ")");
+
 						
 						comm.executeUpdate("INSERT INTO loan_" + accID
 								+ " VALUES(null, '" + cbLoanTerm.getSelectedItem().toString() + "', "
@@ -467,6 +432,15 @@ public class Loan extends JFrame{
 								+ "" + tfPaymentEvery.getText() + ", "
 								+ "" + tfBalance.getText() + ", "
 								+ "" + tfPaid.getText() + ")");
+						
+						getAccountIDs();
+						endLoanOperation();
+						clearLoanData();
+						clearAccData();
+						btnUpdate.setEnabled(false);
+						btnNewLoan.setEnabled(false);
+						btnSelLoan.setEnabled(false);
+						btnDelLoan.setEnabled(false);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
