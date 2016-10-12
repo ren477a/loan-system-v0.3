@@ -362,15 +362,26 @@ public class Loan extends JFrame{
 					} else {
 						//UPDATE MODE
 						//submit for update
-						try {
-							comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
-												+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
-												", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
-												"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
-							endAccOperation();
-						} catch (SQLException e) {
-							JOptionPane.showMessageDialog(null, "Enter valid data only.", "Invalid input!", JOptionPane.ERROR_MESSAGE);
+						if(tfFirst.getText().equals("") || tfLast.getText().equals("") || tfAddress.getText().equals("") || tfEmail.getText().equals("") || tfMonthlyIncome.getText().equals("")) {
+							JOptionPane.showMessageDialog(null,  "Please fill out every field.", "Warning", JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							try {
+								double income = Double.parseDouble(tfMonthlyIncome.getText());
+								if(income < 20000 || cbTenure.getSelectedItem().toString().equals("less than 1 year")) {
+									JOptionPane.showMessageDialog(null,  "Only applicants with monthly income more than 20000 PHP and is working for a year or more is eligible to apply for a loan.", "Denied!", JOptionPane.INFORMATION_MESSAGE);
+								} else {
+								
+									comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
+											+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
+											", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
+											"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
+									endAccOperation();
+								}
+							} catch (SQLException e) {
+								JOptionPane.showMessageDialog(null, "Enter valid data only.", "Invalid input!", JOptionPane.ERROR_MESSAGE);
+							}
 						}
+						
 					}
 					
 					
