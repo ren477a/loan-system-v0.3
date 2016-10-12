@@ -315,6 +315,20 @@ public class Loan extends JFrame{
 			
 			else if(ae.getSource().equals(btnDelAcc)) {
 				System.out.println("Delect account");
+				String selected = listAcc.getSelectedValue().toString();
+				int accID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
+				System.out.println(accID);
+				try {
+					comm.executeUpdate("DELETE FROM accounts WHERE id=" + accID);
+					comm.executeUpdate("DROP TABLE loan_" + accID);
+					clearAccData();
+					clearLoanData();
+					modelLoan.removeAllElements();
+					getAccountIDs();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} 
 			
 			
@@ -385,6 +399,18 @@ public class Loan extends JFrame{
 			
 			else if(ae.getSource().equals(btnDelLoan)) {
 				System.out.println("Delete loan");
+				String selectedLoan = listLoan.getSelectedValue().toString();
+				int loanID = Integer.parseInt(selectedLoan.substring(0, selectedLoan.indexOf(" ")));
+				String selectedAcc = listAcc.getSelectedValue().toString();
+				int accID = Integer.parseInt(selectedAcc.substring(0, selectedAcc.indexOf(" ")));
+				System.out.println(accID);
+				try {
+					comm.executeUpdate("DELETE FROM loan_"+ accID +" WHERE id=" + loanID);
+					getLoanIDs();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} 
 			
 			
@@ -432,21 +458,21 @@ public class Loan extends JFrame{
 								+ "" + tfPaymentEvery.getText() + ", "
 								+ "" + tfBalance.getText() + ", "
 								+ "" + tfPaid.getText() + ")");
-						
 						getAccountIDs();
-						endLoanOperation();
-						clearLoanData();
 						clearAccData();
+						endLoanOperation();
 						btnUpdate.setEnabled(false);
 						btnNewLoan.setEnabled(false);
 						btnSelLoan.setEnabled(false);
 						btnDelLoan.setEnabled(false);
+						
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
 					System.out.println("Application submitted");
+					
 //					System.out.println(tfAccID.getText());
 //					System.out.println(tfFirst.getText());
 //					System.out.println(tfMiddle.getText());
@@ -468,16 +494,29 @@ public class Loan extends JFrame{
 //					System.out.println(tfBalance.getText());
 //					System.out.println(tfPaid.getText());
 				} else {
+					try {
+						comm.executeUpdate("INSERT INTO loan_" + tfAccID.getText()
+								+ " VALUES(null, '" + cbLoanTerm.getSelectedItem().toString() + "', "
+								+ "'" + cbPayBack.getSelectedItem().toString() + "', "
+								+ "" + tfAmount.getText() + ", "
+								+ "" + tfTotalPayable.getText() + ", "
+								+ "" + tfPaymentEvery.getText() + ", "
+								+ "" + tfBalance.getText() + ", "
+								+ "" + tfPaid.getText() + ")");
+						modelLoan.removeAllElements();
+					} catch(SQLException e) {
+						e.printStackTrace();
+					}
 					System.out.println("New loan submitted");
-					System.out.println(tfLoanID.getText());
-					System.out.println(cbLoanTerm.getSelectedItem().toString());
-					System.out.println(cbPayBack.getSelectedItem().toString());
-					System.out.println(tfAmount.getText());
-					System.out.println(tfTotalPayable.getText());
-					System.out.println(tfPaymentEvery.getText());
-					System.out.println(tfBalance.getText());
-					System.out.println(tfPaid.getText());
+					getLoanIDs();
+					listLoan.setSelectedIndex(0);
+					endLoanOperation();
 				}
+				
+				
+				
+				clearLoanData();
+				
 			} 
 			
 			
@@ -569,6 +608,7 @@ public class Loan extends JFrame{
 			
 			else if(ae.getSource().equals(btnLoanCancel)) {
 				System.out.println("loan cancel");
+				modelLoan.removeAllElements();
 				endLoanOperation();
 				clearLoanData();
 				clearAccData();
@@ -695,7 +735,11 @@ public class Loan extends JFrame{
 	public void viewLoanData(){
 		try {
 			tfLoanID.setText(Integer.toString(rs.getInt("id")));
+			cbLoanTerm.setSelectedItem(rs.getObject("term"));
+			cbPayBack.setSelectedItem(rs.getObject("payback"));
 			tfAmount.setText(rs.getString("amount"));
+			tfTotalPayable.setText(rs.getString("total"));
+			tfPaymentEvery.setText(rs.getString("periodical"));
 			tfBalance.setText(rs.getString("balance"));
 			tfPaid.setText(rs.getString("paid"));
 		} catch (SQLException e) {
