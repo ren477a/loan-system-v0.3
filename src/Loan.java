@@ -475,27 +475,7 @@ public class Loan extends JFrame{
 					}
 					
 					System.out.println("Application submitted");
-					
-//					System.out.println(tfAccID.getText());
-//					System.out.println(tfFirst.getText());
-//					System.out.println(tfMiddle.getText());
-//					System.out.println(tfLast.getText());
-//					System.out.println(cbMonth.getSelectedItem().toString());
-//					System.out.println(cbDay.getSelectedItem().toString());
-//					System.out.println(cbYear.getSelectedItem().toString());
-//					System.out.println(tfAddress.getText());
-//					System.out.println(tfEmail.getText());
-//					System.out.println(cbTenure.getSelectedItem().toString());
-//					System.out.println(tfMonthlyIncome.getText());
-//					
-//					System.out.println(tfLoanID.getText());
-//					System.out.println(cbLoanTerm.getSelectedItem().toString());
-//					System.out.println(cbPayBack.getSelectedItem().toString());
-//					System.out.println(tfAmount.getText());
-//					System.out.println(tfTotalPayable.getText());
-//					System.out.println(tfPaymentEvery.getText());
-//					System.out.println(tfBalance.getText());
-//					System.out.println(tfPaid.getText());
+
 				} else {
 					if(tfLoanID.getText().isEmpty()) {
 						try {
@@ -526,8 +506,6 @@ public class Loan extends JFrame{
 							paid += payment;
 							tfBalance.setText(Double.toString(balance));
 							tfPaid.setText(Double.toString(paid));
-//							System.out.println("UPDATE loan_" + tfLoanID.getText() + " SET balance=" + balance
-//									+ ", paid=" + paid + " WHERE id=" + tfLoanID.getText());
 							try {
 								comm.executeUpdate("UPDATE loan_" + tfAccID.getText() + " SET balance=" + balance
 										+ ", paid=" + paid + " WHERE id=" + tfLoanID.getText());
@@ -535,6 +513,8 @@ public class Loan extends JFrame{
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
+							if(balance == 0)
+								btnPay.setEnabled(false);
 							
 						}
 					}
@@ -641,20 +621,7 @@ public class Loan extends JFrame{
 		}
 	}
 	
-//	public void updateAccount() {
-//		try {
-//			System.out.println("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
-//								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
-//								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
-//								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
-//			comm.executeUpdate("UPDATE accounts SET firstname='" + tfFirst.getText() +"', lastname='"+ tfLast.getText() + "', middlename='"
-//								+ tfMiddle.getText() + "', bday_month='" + cbMonth.getSelectedItem().toString() + "', bday_day=" + cbDay.getSelectedItem().toString() +
-//								", bday_year=" + cbYear.getSelectedItem().toString() + ", address='" + tfAddress.getText() + "', email='" + tfEmail.getText() + 
-//								"', tenure='" + cbTenure.getSelectedItem().toString() + "', monthly_income=" + tfMonthlyIncome.getText() + " WHERE id=" + tfAccID.getText());
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
+
 	
 	public void enableLoanInput() {
 		tfAmount.setEditable(true);
@@ -841,7 +808,7 @@ public class Loan extends JFrame{
 	public void getAccountIDs(){
 		try {
 			modelAcc.removeAllElements();
-			rs = comm.executeQuery("SELECT * FROM accounts");
+			rs = comm.executeQuery("SELECT * FROM accounts ORDER BY id");
 			while(rs.next()){
 				modelAcc.addElement(rs.getInt("id") + " - " + rs.getString("lastname") + ", " 
 									+ rs.getString("firstname") + " " + rs.getString("middlename"));
@@ -859,7 +826,7 @@ public class Loan extends JFrame{
 	public void getLoanIDs(){
 		try {
 			modelLoan.removeAllElements();
-			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText());
+			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText() + " ORDER BY id");
 			while(rs.next()){
 				modelLoan.addElement(rs.getInt("id") + " - " + rs.getDouble("Amount"));
 			}
