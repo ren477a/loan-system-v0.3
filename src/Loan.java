@@ -23,8 +23,8 @@ public class Loan extends JFrame{
 					btnUpdate, btnAccCancel,								//panel2
 					btnNewLoan, btnSelLoan, btnDelLoan,		//panel3
 					btnPay, btnCalculate, btnLoanCancel;									//panel4
-	private JList listAcc, listLoan;
-	private DefaultListModel<String> modelAcc, modelLoan;
+	private JList listAcc, listLoan, listDue;
+	private DefaultListModel<String> modelAcc, modelLoan, modelDue;
 	private ButtonListener btnl;
 
 	private Connection conn;
@@ -177,13 +177,21 @@ public class Loan extends JFrame{
 		listLoan.setLayoutOrientation(JList.VERTICAL);
 		listLoan.setVisibleRowCount(3);
 		JScrollPane scrollLoan = new JScrollPane(listLoan);
+		modelDue = new DefaultListModel<String>();
+		listDue = new JList(modelDue);
+		JScrollPane scrollDue = new JScrollPane(listDue);
 		JPanel pnl3Radio = new JPanel(new FlowLayout());
 		pnl3Radio.add(lblLoanSortBy);
 		pnl3Radio.add(rbLoanByID);
 		pnl3Radio.add(rbLoanByAmount);
+		JPanel pnlSelectLoan = new JPanel(new BorderLayout());
+		pnlSelectLoan.add(pnl3Radio, BorderLayout.NORTH);
+		pnlSelectLoan.add(scrollLoan);
+		JPanel pnl3Center = new JPanel(new GridLayout(2, 1));
+		pnl3Center.add(scrollDue);
+		pnl3Center.add(pnlSelectLoan);
 		JPanel pnl3North = new JPanel(new GridLayout(2, 1));
 		pnl3North.add(lblSelectLoan);
-		pnl3North.add(pnl3Radio);
 		JPanel pnl3South = new JPanel(new FlowLayout());
 		pnl3South.add(btnNewLoan);
 		pnl3South.add(btnSelLoan);
@@ -262,7 +270,7 @@ public class Loan extends JFrame{
 		JPanel pnlLoanList = new JPanel(new BorderLayout());
 		pnlLoanList.add(pnl3North, BorderLayout.NORTH);
 		pnlLoanList.add(pnl3South, BorderLayout.SOUTH);
-		pnlLoanList.add(scrollLoan);
+		pnlLoanList.add(pnl3Center);
 		//panel 4
 		JPanel pnlLoanInfo = new JPanel(new BorderLayout());
 		pnlLoanInfo.add(lblLoanDetails, BorderLayout.NORTH);
@@ -410,6 +418,7 @@ public class Loan extends JFrame{
 				int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
 				//load loan data to loan details text fields
 				loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
+				getDueDatesData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
 				if(Double.parseDouble(tfBalance.getText()) == 0)
 					btnPay.setEnabled(false);
 				else
@@ -429,6 +438,7 @@ public class Loan extends JFrame{
 					comm.executeUpdate("DELETE FROM loan_"+ accID +" WHERE id=" + loanID);
 					comm.executeUpdate("DROP TABLE duedate_acc"+accID+"_loan"+loanID);
 					getLoanIDs();
+					clearLoanData();
 					listLoan.setSelectedIndex(0);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
@@ -528,6 +538,14 @@ public class Loan extends JFrame{
 							try {
 								comm.executeUpdate("UPDATE loan_" + tfAccID.getText() + " SET balance=" + balance
 										+ ", paid=" + paid + " WHERE id=" + tfLoanID.getText());
+								rs = comm.executeQuery("SELECT MIN(period) FROM duedate_acc" + tfAccID.getText()
+												+ "_loan" + tfLoanID.getText() + " WHERE status='UNPAID'");
+								rs.next();
+								System.out.println("UPDATE duedate_acc" + tfAccID.getText()
+												+ "_loan" + tfLoanID.getText() + " SET status='PAID' WHERE period=" + rs.getInt("MIN(period)"));
+								comm.executeUpdate("UPDATE duedate_acc" + tfAccID.getText()
+												+ "_loan" + tfLoanID.getText() + " SET status='PAID' WHERE period=" + rs.getInt("MIN(period)"));
+								getDueDatesData(Integer.parseInt(tfAccID.getText()), Integer.parseInt(tfLoanID.getText()));
 							} catch (SQLException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -640,6 +658,22 @@ public class Loan extends JFrame{
 				clearAccData();
 				getAccountIDs();
 			}
+		}
+	}
+	
+	private void getDueDatesData(int accID, int loanID) {
+		try {
+			modelDue.removeAllElements();
+			rs = comm.executeQuery("SELECT * FROM duedate_acc"+accID+"_loan"+loanID);
+			while(rs.next()) {
+				String duedateEntry = "Period " + rs.getInt("period") + ":   " + rs.getString("date") 
+							+ "    " + rs.getString("status");
+				System.out.println(duedateEntry);
+				modelDue.addElement(duedateEntry);
+			}
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -829,6 +863,7 @@ public class Loan extends JFrame{
 		tfBalance.setText("");
 		tfPaid.setText("");
 		btnPay.setEnabled(false);
+		modelDue.removeAllElements();
 	}
 	
 	public void loadAccData(int id){
