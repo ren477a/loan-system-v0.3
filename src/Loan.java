@@ -330,11 +330,12 @@ public class Loan extends JFrame{
 			
 			
 			else if(ae.getSource().equals(btnDelAcc)) {
-				System.out.println("Delect account");
-				String selected = listAcc.getSelectedValue().toString();
-				int accID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
-				System.out.println(accID);
+				
 				try {
+					System.out.println("Delect account");
+					String selected = listAcc.getSelectedValue().toString();
+					int accID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
+					System.out.println(accID);
 					comm.executeUpdate("DELETE FROM accounts WHERE id=" + accID);
 					comm.executeUpdate("DROP TABLE loan_" + accID);
 					rs = comm.executeQuery("SELECT CONCAT( 'DROP TABLE ', GROUP_CONCAT(table_name) , ';' ) "
@@ -346,8 +347,9 @@ public class Loan extends JFrame{
 					modelLoan.removeAllElements();
 					getAccountIDs();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Select account to delete!", "Error", JOptionPane.ERROR_MESSAGE);
+				} catch(NullPointerException e) {
+					JOptionPane.showMessageDialog(null, "List is empty!", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			} 
 			
@@ -419,28 +421,33 @@ public class Loan extends JFrame{
 			
 			
 			else if(ae.getSource().equals(btnSelLoan)) {
-				System.out.println("Select loan");
-				String selected = (String) listLoan.getSelectedValue();
-				int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
-				//load loan data to loan details text fields
-				loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
-				getDueDatesData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
-				if(Double.parseDouble(tfBalance.getText()) == 0)
-					btnPay.setEnabled(false);
-				else
-					btnPay.setEnabled(true);
+				try {
+					System.out.println("Select loan");
+					String selected = (String) listLoan.getSelectedValue();
+					int selectedLoanID = Integer.parseInt(selected.substring(0, selected.indexOf(" ")));
+					//load loan data to loan details text fields
+					loadLoanData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
+					getDueDatesData(Integer.parseInt(tfAccID.getText()), selectedLoanID);
+					if(Double.parseDouble(tfBalance.getText()) == 0)
+						btnPay.setEnabled(false);
+					else
+						btnPay.setEnabled(true);
+				} catch (NullPointerException e) {
+					JOptionPane.showMessageDialog(null, "No loan is selected from the list!", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 				
 			} 
 			
 			
 			else if(ae.getSource().equals(btnDelLoan)) {
-				System.out.println("Delete loan");
-				String selectedLoan = listLoan.getSelectedValue().toString();
-				int loanID = Integer.parseInt(selectedLoan.substring(0, selectedLoan.indexOf(" ")));
-				String selectedAcc = listAcc.getSelectedValue().toString();
-				int accID = Integer.parseInt(selectedAcc.substring(0, selectedAcc.indexOf(" ")));
-				System.out.println(accID);
+				
 				try {
+					System.out.println("Delete loan");
+					String selectedLoan = listLoan.getSelectedValue().toString();
+					int loanID = Integer.parseInt(selectedLoan.substring(0, selectedLoan.indexOf(" ")));
+					String selectedAcc = listAcc.getSelectedValue().toString();
+					int accID = Integer.parseInt(selectedAcc.substring(0, selectedAcc.indexOf(" ")));
+					System.out.println(accID);
 					comm.executeUpdate("DELETE FROM loan_"+ accID +" WHERE id=" + loanID);
 					comm.executeUpdate("DROP TABLE duedate_acc"+accID+"_loan"+loanID);
 					getLoanIDs();
@@ -449,6 +456,8 @@ public class Loan extends JFrame{
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch(NullPointerException e) {
+					JOptionPane.showMessageDialog(null, "List is empty!", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			} 
 			
@@ -617,12 +626,12 @@ public class Loan extends JFrame{
 						lblPaymentEvery.setText("Payment "+payBack);
 						tfBalance.setText(Double.toString(totalWithInterest));
 						tfPaid.setText("0");
-						String message = "Loan amount: " + String.format("%.2f", amount) + "\n\n"
-								+ "Interest: " + (interest*100) + "%\n\n"
-								+ "Total payable: " + String.format("%.2f", totalWithInterest) + "\n\n"
-								+ "Payment every " + payBack + ": " + String.format("%.2f", periodical) + "\n\n"
-								+ "Date loaned: " + new Date().toString() + "\n\n"
-								+ "\nClick YES to proceed and NO to edit.";
+						String message = "Loan amount: " + String.format("%.2f", amount) + "\n"
+								+ "Interest: " + (interest*100) + "%\n"
+								+ "Total payable: " + String.format("%.2f", totalWithInterest) + "\n"
+								+ "Payment every " + payBack + ": " + String.format("%.2f", periodical) + "\n"
+								+ "Date loaned: " + new Date().toString() + "\n"
+								+ "\nClick YES to proceed and NO to edit.\n";
 						int reply = JOptionPane.showConfirmDialog(null, message, "Please verify", JOptionPane.YES_NO_OPTION);
 						if(reply == JOptionPane.YES_OPTION) {
 							btnCalculate.setEnabled(false);
