@@ -26,6 +26,7 @@ public class Loan extends JFrame{
 	private JList listAcc, listLoan, listDue;
 	private DefaultListModel<String> modelAcc, modelLoan, modelDue;
 	private ButtonListener btnl;
+	private RadioListener rbl;
 
 	private Connection conn;
 	private Statement comm;
@@ -50,12 +51,15 @@ public class Loan extends JFrame{
 		}
 		
 		btnl = new ButtonListener();
+		rbl = new RadioListener();
 		
 		//panel1
 		lblSelectAcc = new JLabel("Select account:");
 		lblSortBy = new JLabel("Sort by:");
 		rbByID = new JRadioButton("ID");
+		rbByID.addActionListener(rbl);
 		rbByName = new JRadioButton("Name");
+		rbByName.addActionListener(rbl);
 		bgSortBy = new ButtonGroup();
 		bgSortBy.add(rbByID);
 		bgSortBy.add(rbByName);
@@ -113,7 +117,7 @@ public class Loan extends JFrame{
 		cbMonth = new JComboBox<String>(new String[] {"January","February","April","May","June","July","August","September","October","November","December"});
 		cbDay = new JComboBox<Integer>(new Integer[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31});
 		Integer[] years = new Integer[117];
-		for(int i = 0; i <= 116; i++) { years[i] = 1900 + i; }
+		for(int i = 0; i <= 116; i++) { years[i] = 1900 + i - 18; }
 		cbYear = new JComboBox<Integer>(years);
 		cbYear.setSelectedIndex(116);
 		cbTenure.setEnabled(false);
@@ -156,7 +160,9 @@ public class Loan extends JFrame{
 		
 		//panel 3
 		rbLoanByID = new JRadioButton("ID");
+		rbLoanByID.addActionListener(rbl);
 		rbLoanByAmount = new JRadioButton("Amount");
+		rbLoanByAmount.addActionListener(rbl);
 		bg2SortBy = new ButtonGroup();
 		bg2SortBy.add(rbLoanByID);
 		bg2SortBy.add(rbLoanByAmount);
@@ -204,7 +210,7 @@ public class Loan extends JFrame{
 		lblPayBack = new JLabel("Pay back:");
 		lblAmount = new JLabel("Amount:");
 		lblTotalPayable = new JLabel("Total amount to pay:");
-		lblPaymentEvery = new JLabel("Payment :");
+		lblPaymentEvery = new JLabel("Payment every period:");
 		lblBalance = new JLabel ("Balance:");
 		lblPaid = new JLabel("Paid:");
 		tfLoanID = new JTextField();
@@ -661,6 +667,20 @@ public class Loan extends JFrame{
 		}
 	}
 	
+	private class RadioListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent ae) {
+			if(ae.getSource().equals(rbByID) || ae.getSource().equals(rbByName))
+				getAccountIDs();
+			else if(ae.getSource().equals(rbLoanByID) || ae.getSource().equals(rbLoanByAmount)) {
+				if(!tfAccID.getText().isEmpty())
+					getLoanIDs();
+			}
+				
+				
+		}
+	}
+	
 	private void getDueDatesData(int accID, int loanID) {
 		try {
 			modelDue.removeAllElements();
@@ -859,7 +879,7 @@ public class Loan extends JFrame{
 		tfAmount.setText("");
 		tfTotalPayable.setText("");
 		tfPaymentEvery.setText("");
-		lblPaymentEvery.setText("Payment :");
+		lblPaymentEvery.setText("Payment every period:");
 		tfBalance.setText("");
 		tfPaid.setText("");
 		btnPay.setEnabled(false);
@@ -923,9 +943,14 @@ public class Loan extends JFrame{
 	
 	//gets account IDs and add it to the JList model for accounts
 	public void getAccountIDs(){
+		String sortBy;
+		if(rbByName.isSelected())
+			sortBy = "lastname";
+		else
+			sortBy = "id";
 		try {
 			modelAcc.removeAllElements();
-			rs = comm.executeQuery("SELECT * FROM accounts ORDER BY id");
+			rs = comm.executeQuery("SELECT * FROM accounts ORDER BY "+sortBy);
 			while(rs.next()){
 				modelAcc.addElement(rs.getInt("id") + " - " + rs.getString("lastname") + ", " 
 									+ rs.getString("firstname") + " " + rs.getString("middlename"));
@@ -941,9 +966,14 @@ public class Loan extends JFrame{
 		
 	}
 	public void getLoanIDs(){
+		String orderBy;
+		if(rbLoanByID.isSelected())
+			orderBy = "id";
+		else
+			orderBy = "amount";
 		try {
 			modelLoan.removeAllElements();
-			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText() + " ORDER BY id");
+			rs = comm.executeQuery("SELECT * FROM loan_"+tfAccID.getText() + " ORDER BY "+orderBy);
 			while(rs.next()){
 				modelLoan.addElement(rs.getInt("id") + " - " + rs.getDouble("Amount") + " --Balance: " + String.format("%.2f", rs.getDouble("balance")));
 			}
