@@ -592,23 +592,23 @@ public class Loan extends JFrame{
 						double interest = 0;
 						if(loanTerm.equals("12 months")) {
 							dividend = 12;
-							interest = 0.125;
+							interest = 0.10;
 						} 
 						else if(loanTerm.equals("2 years")) {
 							dividend = 24;
-							interest = 0.15;
+							interest = 0.125;
 						} 
 						else if(loanTerm.equals("3 years")) {
 							dividend = 36;
-							interest = 0.175;
+							interest = 0.15;
 						} 
 						else if(loanTerm.equals("5 years")) {
 							dividend = 60;
-							interest = 0.20;
+							interest = 0.175;
 						} 
 						else if(loanTerm.equals("10 years")) {
 							dividend = 120;
-							interest = 0.25;
+							interest = 0.20;
 						} 
 						String payBack = cbPayBack.getSelectedItem().toString();
 						if(payBack.equals("Every month"))
