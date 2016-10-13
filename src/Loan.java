@@ -992,10 +992,9 @@ public class Loan extends JFrame{
 		}
 	}
 
-	
-	public static void main(String[] args) {
-		JFrame app = new Loan();
-		
-	}
+//	
+//	public static void main(String[] args) {
+//		JFrame app = new Loan();
+//	}
 
 }
