@@ -295,7 +295,12 @@ public class Loan extends JFrame{
 
 		getAccountIDs();
 		listAcc.setSelectedIndex(0);
-		createShowGUI();
+		
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createShowGUI();
+            }
+        });
 		
 		
 	}
